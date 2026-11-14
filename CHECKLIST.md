@@ -48,17 +48,17 @@ Status key: ✅ done and verified · ⚠️ done with a stated limitation · ❌
 | Preprocessing works | ✅ | unit and integration tests on real fixture crops |
 | Cloud and shadow masking works | ✅ | quality codes tested; quality summaries per observation |
 | Geospatial alignment preserved | ✅ | grid-identity assertions for every output |
-| U-Net can be trained locally | ✅ | 20 epochs on CPU, about 74 min, 7.24 M parameters |
+| U-Net can be trained locally | ✅ | 20 epochs on CPU, 74 min, 7.24 M parameters; best val mIoU 0.849; test mIoU 0.733, tree IoU 0.939 |
 | Real segmentation predictions | ✅ | segmentation of the 2025 observation |
 | Forest probability maps displayed | ✅ | map and segmentation pages |
 | Two observation dates compared | ✅ | change runs |
-| Potential forest-loss regions identified | ✅ | see model card / change summary |
+| Potential forest-loss regions identified | ✅ | 2024→2025: 192 regions, 489.3 ± 89.4 ha (88 Hansen-corroborated); 2023→2024: 157 regions, 279.3 ± 63.9 ha |
 | Map displays results | ✅ | screenshot-verified |
 | Detected regions can be investigated | ✅ | investigation page; API test for region detail and review |
 | Geospatial results exported | ✅ | GeoJSON / GPKG / CSV / GeoTIFF / bundle with provenance; API test downloads zips |
 | Evaluation metrics from actual results | ✅ | `data/evaluations/<id>/evaluation.json` |
 | Experiment history saved | ✅ | history page and tables |
-| Important features pass automated tests | ✅ | see test counts in the final report |
+| Important features pass automated tests | ✅ | backend pytest 50 passed (+3 live-provider tests passed with `SYLVA_RUN_NETWORK=1`); frontend vitest 8 passed; Playwright e2e 14 passed |
 | Documentation explains reproduction | ✅ | `docs/reproducibility.md` |
 
 ## Known gaps / not done

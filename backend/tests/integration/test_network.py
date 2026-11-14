@@ -5,7 +5,7 @@ import pytest
 from forestwatch.geo.grid import Grid
 from forestwatch.labels.reference import hansen_on_grid, worldcover_on_grid
 from forestwatch.preprocessing.ingest import load_product
-from forestwatch.providers.earth_search import EarthSearchProvider, EarthSearchLegacyProvider
+from forestwatch.providers.earth_search import EarthSearchLegacyProvider, EarthSearchProvider
 
 BBOX = (-55.40, -7.07, -55.38, -7.05)
 
