@@ -230,8 +230,12 @@ def task_build_regions(params: dict, ctx: JobContext) -> dict:
     from forestwatch.regions import build_region, load_region_config
 
     cfg = load_region_config()
-    names = params.get("regions") or [r["name"] for r in cfg["regions"]]
     out = get_settings().path("regions")
+    # explicit list -> (re)build those; empty -> build only regions that are missing
+    names = params.get("regions") or [r["name"] for r in cfg["regions"] if not (out / r["name"] / "region.json").exists()]
+    if not names:
+        ctx.log("All configured regions are already built")
+        return {"built": [], "failed": {}}
     done, failed = [], {}
     for i, spec in enumerate([r for r in cfg["regions"] if r["name"] in names]):
         if ctx.cancelled():
