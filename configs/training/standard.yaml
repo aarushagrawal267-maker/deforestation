@@ -1,0 +1,20 @@
+# Standard training profile (CPU: roughly 1-3 hours depending on the machine).
+# Regions default to the train/val/test roles in configs/regions.yaml.
+name: unet-standard
+bands: [B2, B3, B4, B5, B6, B7, B8, B8A, B11, B12]
+base: 32
+depth: 4
+dropout: 0.2
+up_mode: bilinear
+epochs: 25
+batch_size: 8
+samples_per_epoch: 480
+crop: 256
+lr: 0.001
+weight_decay: 0.0001
+warmup_epochs: 1
+loss: ce_dice
+dice_weight: 0.5
+augment: true
+early_stopping_patience: 8
+seed: 42

@@ -1,0 +1,58 @@
+# Manually triggered (Actions tab -> CI -> Run workflow) so it never consumes minutes unexpectedly.
+name: CI
+on:
+  workflow_dispatch:
+
+jobs:
+  linux-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - uses: actions/setup-node@v4
+        with: { node-version: "22" }
+      - name: Backend tests
+        working-directory: backend
+        run: |
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements-dev.txt
+          python -m pytest -q
+      - name: Frontend typecheck, unit tests, build
+        working-directory: frontend
+        run: |
+          npm ci
+          npx tsc -b --noEmit
+          npm test
+          npx vite build
+
+  windows-scripts:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - uses: actions/setup-node@v4
+        with: { node-version: "22" }
+      - name: setup.ps1
+        shell: powershell
+        run: powershell -ExecutionPolicy Bypass -File .\setup.ps1 -Cpu
+      - name: Backend tests on Windows
+        shell: powershell
+        working-directory: backend
+        run: .\.venv\Scripts\python.exe -m pytest -q
+      - name: start.ps1 / health checks / stop.ps1
+        shell: powershell
+        run: |
+          powershell -ExecutionPolicy Bypass -File .\start.ps1 -NoBrowser
+          (Invoke-WebRequest http://127.0.0.1:8000/api/health -UseBasicParsing).Content
+          (Invoke-WebRequest http://127.0.0.1:8000/docs -UseBasicParsing).StatusCode
+          (Invoke-WebRequest http://127.0.0.1:5173/ -UseBasicParsing).StatusCode
+          (Invoke-WebRequest http://127.0.0.1:5173/api/aois -UseBasicParsing).Content
+          powershell -ExecutionPolicy Bypass -File .\stop.ps1
+          Start-Sleep 3
+          if (Get-NetTCPConnection -LocalPort 8000 -State Listen -ErrorAction SilentlyContinue) { throw "backend still running" }
+      - name: Logs on failure
+        if: failure()
+        shell: powershell
+        run: Get-ChildItem logs -ErrorAction SilentlyContinue | ForEach-Object { "== $($_.Name)"; Get-Content $_.FullName -Tail 50 }

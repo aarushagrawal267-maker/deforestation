@@ -1,0 +1,63 @@
+{
+  "kind": "scene",
+  "scene_ids": [
+    "S2B_T21MXN_20250719T140233_L2A"
+  ],
+  "acquired": [
+    "2025-07-19T14:04:32.588000+00:00"
+  ],
+  "provider": "earth-search",
+  "collection": "sentinel-2-c1-l2a",
+  "processing_baselines": [
+    "05.11"
+  ],
+  "platform": "sentinel-2b",
+  "mgrs_tile": "MGRS-21MXN",
+  "scene_cloud_cover": 0.00049,
+  "processing": [
+    "windowed read of COG band assets onto shared UTM 10 m grid (rasterio WarpedVRT)",
+    "10 m bands: bilinear (grid-aligned, effectively unchanged); 20 m bands: bilinear upsampling to 10 m (no new spatial information)",
+    "SCL and cloud-probability: nearest neighbour",
+    "reflectance = DN * 1e-4 + (-0.1)",
+    "masked: SCL 0,1 (no data), 3 (shadow), 8,9,10 (cloud/cirrus), cloud prob >= 40%, 2,11 (dark/snow, low quality), 4 px (40 m) dilation buffer around clouds and shadows"
+  ],
+  "attribution": "Contains modified Copernicus Sentinel data 2025",
+  "grid": {
+    "crs": "EPSG:32721",
+    "transform": [
+      10.0,
+      0.0,
+      679950.0,
+      0.0,
+      -10.0,
+      9221400.0
+    ],
+    "width": 160,
+    "height": 160
+  },
+  "bands": [
+    "B2",
+    "B3",
+    "B4",
+    "B5",
+    "B6",
+    "B7",
+    "B8",
+    "B8A",
+    "B11",
+    "B12"
+  ],
+  "reflectance_scale": 0.0001,
+  "nodata": -32768,
+  "quality_summary": {
+    "valid": 0.9984265687821021,
+    "no data": 0.0,
+    "cloud": 4.010019032552833e-05,
+    "cloud shadow": 0.0,
+    "cloud/shadow buffer": 8.621540919988592e-05,
+    "dark area / snow (low quality)": 0.0014471156183725037
+  },
+  "valid_fraction": 0.9984265687821021,
+  "created_at": "2026-11-14T19:50:09.367439+00:00",
+  "note": "160x160 crop of a real ingested observation (test fixture)"
+}

@@ -1,0 +1,19 @@
+# Quick profile for CPU laptops (roughly 10-30 minutes). Lower capacity, fewer epochs.
+name: unet-quick
+bands: [B2, B3, B4, B5, B6, B7, B8, B8A, B11, B12]
+base: 16
+depth: 4
+dropout: 0.1
+up_mode: bilinear
+epochs: 10
+batch_size: 8
+samples_per_epoch: 240
+crop: 256
+lr: 0.002
+weight_decay: 0.0001
+warmup_epochs: 1
+loss: ce_dice
+dice_weight: 0.5
+augment: true
+early_stopping_patience: 5
+seed: 42

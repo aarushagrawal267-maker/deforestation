@@ -1,0 +1,62 @@
+# Training / validation / test regions for the Sylva U-Net.
+#
+# Splits are by WHOLE REGION (geographically separated) to prevent spatial leakage:
+# no tile of a validation/test region is ever seen in training.
+# size_deg is the side length of the square AOI in degrees (0.12 deg ~ 13 km).
+# window: acquisition window used to find a low-cloud 2021 scene, matching the
+# ESA WorldCover 2021 (v200) label year.
+
+label_year: 2021
+size_deg: 0.12
+
+regions:
+  - name: rondonia_ariquemes
+    role: train
+    center: [-63.04, -9.92]
+    window: ["2021-06-01", "2021-09-30"]
+    description: Pasture/forest mosaic and town, Rondonia, Brazil
+  - name: para_altamira
+    role: train
+    center: [-52.22, -3.21]
+    window: ["2021-07-01", "2021-10-31"]
+    description: Xingu river, Altamira town, forest and pasture, Para, Brazil
+  - name: mato_grosso_sinop
+    role: train
+    center: [-55.50, -11.86]
+    window: ["2021-06-01", "2021-09-30"]
+    description: Cropland, city and forest remnants, Mato Grosso, Brazil
+  - name: acre_rio_branco
+    role: train
+    center: [-67.81, -9.97]
+    window: ["2021-06-01", "2021-09-30"]
+    description: City, river, pasture and forest, Acre, Brazil
+  - name: riau_pekanbaru
+    role: train
+    center: [101.45, 0.51]
+    window: ["2021-05-01", "2021-09-30"]
+    description: Plantations, peat forest and city, Riau, Indonesia
+  - name: amazonas_manaus
+    role: val
+    center: [-60.02, -3.07]
+    window: ["2021-07-01", "2021-10-31"]
+    description: City edge, Rio Negro, forest, Amazonas, Brazil
+  - name: bolivia_san_ignacio
+    role: train
+    center: [-60.96, -16.37]
+    window: ["2021-05-01", "2021-09-30"]
+    description: Chiquitano dry forest and pasture, Santa Cruz, Bolivia (deciduous; leaf-off in the dry season)
+  - name: mato_grosso_colniza
+    role: val
+    center: [-59.03, -9.43]
+    window: ["2021-06-01", "2021-09-30"]
+    description: Humid forest frontier with recent clearings, Colniza, Mato Grosso, Brazil
+  - name: peru_puerto_maldonado
+    role: test
+    center: [-69.19, -12.59]
+    window: ["2021-06-01", "2021-09-30"]
+    description: Town, Madre de Dios river, mining and forest, Peru
+  - name: para_novo_progresso
+    role: test
+    center: [-55.38, -7.05]
+    window: ["2021-06-01", "2021-09-30"]
+    description: BR-163 deforestation frontier, Para, Brazil (also the default monitoring AOI)
