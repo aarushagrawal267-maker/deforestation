@@ -57,8 +57,6 @@ def import_model_dir(d: Path) -> str | None:
             db.add(EpochMetric(experiment_id=exp.id, **{k: rec[k] for k in (
                 "epoch", "train_loss", "val_loss", "val_miou", "val_accuracy", "val_per_class_iou", "lr", "seconds")}))
         db.commit()
-        if not get_setting(db, "active_experiment_id"):
-            set_setting(db, "active_experiment_id", exp.id)
         return exp.id
 
 
@@ -92,4 +90,21 @@ def import_cli_models() -> list[str]:
             eid = import_model_dir(d)
             if eid:
                 out.append(eid)
+    _ensure_active_model(root, out)
     return out
+
+
+def _ensure_active_model(root: Path, imported: list[str]) -> None:
+    """If no model is active yet, activate the one named in models/DEFAULT (else the first imported)."""
+    with SessionLocal() as db:
+        if get_setting(db, "active_experiment_id"):
+            return
+        default = BUNDLED_MODELS / "DEFAULT"
+        if default.exists():
+            ck = str(root / default.read_text().strip() / "best.pt")
+            exp = db.scalars(select(Experiment).where(Experiment.checkpoint == ck)).first()
+            if exp:
+                set_setting(db, "active_experiment_id", exp.id)
+                return
+        if imported:
+            set_setting(db, "active_experiment_id", imported[0])
