@@ -56,12 +56,13 @@ def normalize(refl: np.ndarray, stats: dict) -> np.ndarray:
     return np.nan_to_num(x, nan=0.0).astype(np.float32)
 
 
-def class_weights(regions: list[RegionData], max_weight: float = 10.0) -> np.ndarray:
+def class_weights(regions: list[RegionData], max_weight: float = 10.0, power: float = 0.5) -> np.ndarray:
+    """Inverse-frequency class weights, ``freq ** -power`` normalised to mean 1 (0.5 = inverse sqrt)."""
     counts = np.zeros(NUM_CLASSES, np.float64)
     for r in regions:
         counts += np.bincount(r.labels[r.labels != IGNORE].ravel(), minlength=NUM_CLASSES)[:NUM_CLASSES]
     freq = counts / max(1, counts.sum())
-    w = np.where(counts > 0, 1.0 / np.sqrt(np.maximum(freq, 1e-8)), 0.0)
+    w = np.where(counts > 0, np.maximum(freq, 1e-8) ** -power, 0.0)
     w = w / w[counts > 0].mean()
     return np.clip(w, 0, max_weight).astype(np.float32)
 
@@ -96,6 +97,8 @@ class RandomCropDataset(Dataset):
         min_labelled: float = 0.3,
         augment_data: bool = True,
         seed: int = 0,
+        rare_crop_fraction: float = 0.0,
+        rare_class_max_freq: float = 0.05,
     ):
         self.x = [normalize(r.refl, stats) for r in regions]
         self.y = [r.labels for r in regions]
@@ -107,6 +110,16 @@ class RandomCropDataset(Dataset):
         self.epoch = 0
         sizes = np.array([y.size for y in self.y], np.float64)
         self.p = sizes / sizes.sum()
+        # Rare-class sampling: a fraction of crops is centred on a pixel of a rare class
+        # (real labelled examples), instead of only up-weighting those few pixels in the loss.
+        self.rare_crop_fraction = rare_crop_fraction
+        counts = sum(np.bincount(y[y != IGNORE].ravel(), minlength=NUM_CLASSES)[:NUM_CLASSES] for y in self.y)
+        freq = counts / max(1, counts.sum())
+        self.rare_classes = [c for c in range(NUM_CLASSES) if 0 < freq[c] < rare_class_max_freq]
+        self.rare_pix = {}
+        for c in self.rare_classes:
+            locs = [(ri, np.flatnonzero(y.ravel() == c)) for ri, y in enumerate(self.y)]
+            self.rare_pix[c] = [(ri, ix) for ri, ix in locs if ix.size]
 
     def set_epoch(self, e: int):
         self.epoch = e
@@ -116,6 +129,18 @@ class RandomCropDataset(Dataset):
 
     def __getitem__(self, i):
         rng = np.random.default_rng((self.seed, self.epoch, i))
+        if self.rare_classes and rng.random() < self.rare_crop_fraction:
+            c = self.rare_classes[int(rng.integers(len(self.rare_classes)))]
+            ri, ix = self.rare_pix[c][int(rng.integers(len(self.rare_pix[c])))]
+            H, W = self.y[ri].shape
+            cs = min(self.crop, H, W)
+            cy, cx = divmod(int(ix[int(rng.integers(ix.size))]), W)
+            yy = int(np.clip(cy - cs // 2 + rng.integers(-cs // 4, cs // 4 + 1), 0, H - cs))
+            xx = int(np.clip(cx - cs // 2 + rng.integers(-cs // 4, cs // 4 + 1), 0, W - cs))
+            x, y = self.x[ri][:, yy : yy + cs, xx : xx + cs], self.y[ri][yy : yy + cs, xx : xx + cs]
+            if self.aug:
+                x, y = augment(x, y, rng)
+            return torch.from_numpy(np.ascontiguousarray(x)), torch.from_numpy(np.ascontiguousarray(y).astype(np.int64))
         for _ in range(20):
             r = int(rng.choice(len(self.x), p=self.p))
             H, W = self.y[r].shape

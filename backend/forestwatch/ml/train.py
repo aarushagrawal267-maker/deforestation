@@ -48,6 +48,8 @@ class TrainConfig:
     warmup_epochs: int = 1
     loss: str = "ce_dice"
     dice_weight: float = 0.5
+    class_weight_power: float = 0.5
+    rare_crop_fraction: float = 0.0
     augment: bool = True
     early_stopping_patience: int = 8
     seed: int = 42
@@ -111,10 +113,13 @@ def train(cfg: TrainConfig, regions_dir: Path, out_dir: Path, cb: Callbacks | No
     train_r = [load_region(regions_dir / n, cfg.bands) for n in cfg.train_regions]
     val_r = [load_region(regions_dir / n, cfg.bands) for n in cfg.val_regions]
     stats = compute_norm_stats(train_r, seed=cfg.seed)
-    weights = class_weights(train_r)
+    weights = class_weights(train_r, power=cfg.class_weight_power)
     cb.on_log(f"Class weights: {np.round(weights, 3).tolist()}")
 
-    train_ds = RandomCropDataset(train_r, stats, cfg.crop, cfg.samples_per_epoch, augment_data=cfg.augment, seed=cfg.seed)
+    train_ds = RandomCropDataset(
+        train_r, stats, cfg.crop, cfg.samples_per_epoch, augment_data=cfg.augment, seed=cfg.seed,
+        rare_crop_fraction=cfg.rare_crop_fraction,
+    )
     val_ds = GridTileDataset(val_r, stats, tile=cfg.crop)
     if len(val_ds) == 0:
         raise ValueError("Validation regions produced no tiles with labelled pixels")

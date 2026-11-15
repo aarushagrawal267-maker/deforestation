@@ -13,9 +13,11 @@
 | Cloud / invalid | invalid (cloud, shadow, buffer, no data) on **either** date |
 | Stable forest | P₁ ≥ 0.6 and P₂ ≥ 0.6 |
 | **Potential forest loss** | P₁ ≥ 0.6, P₂ ≤ 0.4, ΔP ≤ −0.3, entropy ≤ 0.8 on both dates |
-| Potential vegetation / tree-cover gain | P₁ ≤ 0.4, P₂ ≥ 0.6, ΔP ≥ +0.3, entropy ≤ 0.8 |
+| Potential vegetation / tree-cover gain | **stricter than loss:** P₁ ≤ 0.2, P₂ ≥ 0.8, ΔP ≥ +0.3, ΔNDVI ≥ +0.10, entropy ≤ 0.8, opening radius 2 px. Candidates that cross 0.4/0.6 but fail these are *uncertain* |
 | Non-forest stable | P₁ ≤ 0.4 and P₂ ≤ 0.4 |
 | Uncertain change | everything else (intermediate probabilities, high entropy, small ΔP) |
+
+   Why gain is stricter: closed canopy rarely appears within one year, so most one-year "gain" at the loss thresholds was pasture or regrowth edges and phenology nudging P(tree) across 0.5. With the loss-style rule the 2024 → 2025 run reported 314.8 ha of gain in 246 regions; with the stricter rule it reports 6.8 ha in 5 regions, while loss is unchanged (489.3 ha).
 
 6. **Edge suppression:** a morphological opening (radius 1 px) removes one-pixel strips along forest edges, a typical misregistration artefact.
 7. **Spectral support:** a pixel is spectrally supported when ΔNDVI ≤ −0.10 or ΔNBR ≤ −0.10. By default, unsupported loss is still reported but flagged; the "require spectral support" option turns it into *uncertain* instead.

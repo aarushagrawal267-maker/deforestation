@@ -21,6 +21,10 @@ const PARAM_LABELS: Record<string, string> = {
   min_mapping_unit_ha: "Minimum mapping unit (ha)",
   opening_px: "Edge suppression (px)",
   coreg_max_shift_px: "Max residual shift (px)",
+  gain_lo: "Gain: P(tree) before ≤",
+  gain_hi: "Gain: P(tree) after ≥",
+  gain_ndvi_rise: "Gain: minimum ΔNDVI rise",
+  gain_opening_px: "Gain edge suppression (px)",
 };
 
 export default function ChangePage() {

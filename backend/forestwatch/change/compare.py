@@ -35,6 +35,12 @@ class ChangeParams:
     opening_px: int = 1  # morphological opening radius to suppress edge/misregistration strips
     min_mapping_unit_ha: float = 0.5
     coreg_max_shift_px: float = 0.5
+    # Gain is held to a stricter standard than loss: confident canopy rarely appears within
+    # a year, so most one-year "gain" is pasture/regrowth edges or phenology crossing 0.5.
+    gain_lo: float = 0.2  # P(tree) before must be at or below
+    gain_hi: float = 0.8  # P(tree) after must be at or above
+    gain_ndvi_rise: float = 0.10  # NDVI must increase by at least this much (spectral support)
+    gain_opening_px: int = 2  # stronger opening to remove edge strips
 
     @classmethod
     def from_dict(cls, d: dict | None) -> ChangeParams:
@@ -74,7 +80,9 @@ def classify_change(
     stable_f = valid & (a >= hi) & (b >= hi)
     stable_n = valid & (a <= lo) & (b <= lo)
     loss = valid & (a >= hi) & (b <= lo) & (dp <= -params.min_delta)
-    gain = valid & (a <= lo) & (b >= hi) & (dp >= params.min_delta)
+    gain_candidate = valid & (a <= lo) & (b >= hi) & (dp >= params.min_delta)
+    gain = gain_candidate & (a <= params.gain_lo) & (b >= params.gain_hi)
+    gain &= np.nan_to_num(d_ndvi, nan=0) >= params.gain_ndvi_rise
 
     spectral = np.nan_to_num(d_ndvi, nan=0) <= params.spectral_ndvi_drop
     spectral |= np.nan_to_num(d_nbr, nan=0) <= params.spectral_nbr_drop
@@ -85,7 +93,7 @@ def classify_change(
     gain &= ~uncertain_ent
 
     loss_clean = _open(loss, params.opening_px)
-    gain_clean = _open(gain, params.opening_px)
+    gain_clean = _open(gain, params.gain_opening_px)
 
     cat = np.full(p1.shape, UNCERTAIN, np.uint8)
     cat[stable_n] = STABLE_NONFOREST
@@ -99,6 +107,7 @@ def classify_change(
         "fire_like": (np.nan_to_num(d_nbr, nan=0) <= params.fire_dnbr) & valid,
         "removed_by_opening": (loss & ~loss_clean) | (gain & ~gain_clean),
         "loss_without_spectral_support": contradicted & loss_clean,
+        "gain_rejected_strict": gain_candidate & ~gain_clean,
     }
     return cat, aux
 

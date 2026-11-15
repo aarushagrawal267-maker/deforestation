@@ -1,0 +1,23 @@
+# v2 profile: same as unet-base32-v1 (see docs/model-card.md) plus rare-class handling
+# for the bare/sparse class: 25% of crops centred on rare-class pixels and milder
+# class weights (freq^-0.25 instead of freq^-0.5) to reduce over-prediction.
+name: unet-base32-v2
+bands: [B2, B3, B4, B5, B6, B7, B8, B8A, B11, B12]
+base: 32
+depth: 4
+dropout: 0.2
+up_mode: bilinear
+epochs: 20
+batch_size: 8
+samples_per_epoch: 480
+crop: 256
+lr: 0.001
+weight_decay: 0.0001
+warmup_epochs: 1
+loss: ce_dice
+dice_weight: 0.5
+class_weight_power: 0.25
+rare_crop_fraction: 0.25
+augment: true
+early_stopping_patience: 7
+seed: 42

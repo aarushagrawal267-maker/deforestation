@@ -21,7 +21,7 @@ from forestwatch.geo.grid import Grid
 def _run(p1, p2, ent=0.1, dndvi=-0.3, dnbr=-0.3, **kw):
     p1, p2 = np.asarray(p1, np.float32), np.asarray(p2, np.float32)
     e = np.full(p1.shape, ent, np.float32)
-    params = ChangeParams(opening_px=0, **kw)
+    params = ChangeParams(**{"opening_px": 0, "gain_opening_px": 0, **kw})
     return classify_change(p1, p2, e, e, np.full(p1.shape, dndvi, np.float32), np.full(p1.shape, dnbr, np.float32), params)
 
 
@@ -29,9 +29,21 @@ def test_truth_table():
     p1 = [[0.9, 0.9, 0.1, 0.1, 0.5, np.nan, 0.65]]
     p2 = [[0.9, 0.1, 0.1, 0.9, 0.5, 0.2, 0.39]]
     cat, aux = _run(p1, p2)
-    assert cat.tolist() == [[STABLE_FOREST, POTENTIAL_LOSS, STABLE_NONFOREST, POTENTIAL_GAIN, UNCERTAIN, INVALID, UNCERTAIN]]
+    # 4th pixel: 0.1 -> 0.9 but NDVI fell, so gain is not spectrally supported -> uncertain
+    assert cat.tolist() == [[STABLE_FOREST, POTENTIAL_LOSS, STABLE_NONFOREST, UNCERTAIN, UNCERTAIN, INVALID, UNCERTAIN]]
     # last pixel: hi->lo but delta 0.26 < 0.3 -> uncertain
     assert np.isnan(aux["dp"][0, 5])
+
+
+def test_gain_is_strict():
+    # supported: P 0.1 -> 0.9 with NDVI rise
+    cat, aux = _run([[0.1, 0.35, 0.1]], [[0.9, 0.9, 0.7]], dndvi=0.2, dnbr=0.2)
+    # 2nd: before 0.35 > gain_lo 0.2; 3rd: after 0.7 < gain_hi 0.8 -> both uncertain
+    assert cat.tolist() == [[POTENTIAL_GAIN, UNCERTAIN, UNCERTAIN]]
+    assert aux["gain_rejected_strict"].tolist() == [[False, True, True]]
+    # NDVI rise too small
+    cat, _ = _run([[0.1]], [[0.9]], dndvi=0.05, dnbr=0.05)
+    assert cat[0, 0] == UNCERTAIN
 
 
 def test_high_entropy_blocks_loss():
