@@ -187,3 +187,31 @@ def test_bundled_model_installed_on_fresh_start(tmp_data_dir, monkeypatch):
         assert [e["name"] for e in exps] == ["tiny-v1"]
         assert c.get("/api/settings").json()["active_experiment_id"] == exps[0]["id"]
     assert (tmp_data_dir / "models" / "tiny-v1" / "best.pt").exists()
+
+
+def test_bundled_model_not_duplicated(tmp_data_dir, monkeypatch):
+    """A bundled checkpoint whose weights are already registered is not imported a second time."""
+    import app.services.registry as registry
+
+    src = tmp_data_dir / "bundle" / "tiny-v1"
+    src.mkdir(parents=True)
+    torch.save({"state_dict": UNet(10, 5, 8, 2).state_dict(), "train_config": {"name": "tiny-v1", "bands": list(BAND_NAMES)}},
+               src / "best.pt")
+    (src / "result.json").write_text(json.dumps({"status": "completed", "history": []}))
+    local = tmp_data_dir / "models" / "exp_local"
+    local.mkdir(parents=True)
+    shutil.copy2(src / "best.pt", local / "best.pt")
+    from app.db.models import Experiment
+    from app.db.session import SessionLocal
+    from forestwatch.ml.infer import file_sha256
+
+    with _client():
+        pass
+    with SessionLocal() as db:
+        db.query(Experiment).delete()
+        db.add(Experiment(name="local", config={}, status="completed", checkpoint=str(local / "best.pt"),
+                          checkpoint_sha256=file_sha256(local / "best.pt")))
+        db.commit()
+    monkeypatch.setattr(registry, "BUNDLED_MODELS", tmp_data_dir / "bundle")
+    with _client() as c:
+        assert [e["name"] for e in c.get("/api/experiments").json()] == ["local"]

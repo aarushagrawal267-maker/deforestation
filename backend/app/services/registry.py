@@ -30,6 +30,9 @@ def import_model_dir(d: Path) -> str | None:
     with SessionLocal() as db:
         if db.scalars(select(Experiment).where(Experiment.checkpoint == str(ckpt_path))).first():
             return None
+        sha = file_sha256(ckpt_path)
+        if db.scalars(select(Experiment).where(Experiment.checkpoint_sha256 == sha)).first():
+            return None  # same weights already registered (e.g. the bundled copy of a locally trained model)
         res = json.loads(res_path.read_text())
         ckpt = torch.load(ckpt_path, map_location="cpu", weights_only=False)
         cfg = ckpt["train_config"]
@@ -38,7 +41,7 @@ def import_model_dir(d: Path) -> str | None:
             config=cfg,
             status=res["status"],
             checkpoint=str(ckpt_path),
-            checkpoint_sha256=file_sha256(ckpt_path),
+            checkpoint_sha256=sha,
             best_val_miou=res.get("best_val_miou"),
             best_epoch=res.get("best_epoch"),
             n_params=res.get("n_params"),
@@ -85,7 +88,7 @@ def import_cli_models() -> list[str]:
         known_dirs = {Path(e.checkpoint).parent.name for e in db.scalars(select(Experiment)).all() if e.checkpoint}
     out = []
     for d in sorted(root.iterdir()):
-        if d.is_dir() and not d.name.startswith("exp_") and d.name not in known_dirs:
+        if d.is_dir() and not d.name.startswith("exp_") and d.name not in known_dirs and (d / "result.json").exists():
             eid = import_model_dir(d)
             if eid:
                 out.append(eid)
