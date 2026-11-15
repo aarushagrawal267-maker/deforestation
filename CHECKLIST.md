@@ -29,9 +29,9 @@ Status key: ✅ done and verified · ⚠️ done with a stated limitation · ❌
 | 20 | SQLite database | ✅ | `data/sylva.sqlite` (WAL) |
 | 21 | Documented API | ✅ | http://localhost:8000/docs |
 | 22 | Automated tests | ✅ | backend pytest, frontend vitest, Playwright e2e |
-| 23 | Windows setup script | ⚠️ | `setup.ps1` written; **not executed on Windows** during development (see below) |
-| 24 | Windows startup script | ⚠️ | `start.ps1`; same caveat |
-| 25 | Windows shutdown script | ⚠️ | `stop.ps1`; same caveat |
+| 23 | Windows setup script | ✅ | `setup.ps1` run successfully on GitHub Actions `windows-latest` |
+| 24 | Windows startup script | ✅ | `start.ps1`, then health checks of API, docs, frontend and proxy on `windows-latest` |
+| 25 | Windows shutdown script | ✅ | `stop.ps1`; verified port 8000 released on `windows-latest` |
 | 26 | README | ✅ | `README.md` |
 | 27 | Dataset documentation | ✅ | `docs/datasets.md` |
 | 28 | Scientific methodology | ✅ | `docs/methodology.md`, `docs/change-detection.md`, `docs/unet.md` |
@@ -42,7 +42,7 @@ Status key: ✅ done and verified · ⚠️ done with a stated limitation · ❌
 
 | Criterion | Status | Notes |
 |---|---|---|
-| Application starts on Windows | ⚠️ | Not run on Windows here. A manually triggered GitHub Actions job (`.github/workflows/ci.yml`, `windows-scripts`) runs setup → tests → start → health checks → stop on `windows-latest`; it has not been run yet |
+| Application starts on Windows | ✅ | GitHub Actions `windows-scripts` job (`.github/workflows/ci.yml`): setup.ps1 → backend tests → start.ps1 → health checks → stop.ps1 on `windows-latest`, passed. Not yet tried on the owner's own laptop |
 | Frontend and backend communicate | ✅ | Vite proxy; Playwright `/api/health` through the frontend |
 | Real Sentinel-2 imagery obtained / loaded locally | ✅ | windowed COG reads; cached products reused offline |
 | Preprocessing works | ✅ | unit and integration tests on real fixture crops |
@@ -63,7 +63,7 @@ Status key: ✅ done and verified · ⚠️ done with a stated limitation · ❌
 
 ## Known gaps / not done
 
-* **Windows execution not verified** in this environment (Linux container; running a PowerShell binary was not permitted here). Run `setup.ps1` / `start.ps1` / `stop.ps1` on the target laptop, or trigger the Windows CI job.
+* **Windows** is verified on a GitHub-hosted Windows Server runner, not on a physical laptop; first run on the target laptop is still worth doing.
 * **Dynamic World** labels are supported in code (`labels/dynamic_world.py`, `scripts/export_dynamic_world.py`) but not used: no Earth Engine account was configured.
 * **CDSE authenticated download** is implemented as a token flow but not verified (no credentials). Earth Search (no credentials) is the working provider.
 * **GPU path** (CUDA wheels, mixed precision) is implemented but untested: no GPU here.
