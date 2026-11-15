@@ -48,7 +48,7 @@ Status key: ✅ done and verified · ⚠️ done with a stated limitation · ❌
 | Preprocessing works | ✅ | unit and integration tests on real fixture crops |
 | Cloud and shadow masking works | ✅ | quality codes tested; quality summaries per observation |
 | Geospatial alignment preserved | ✅ | grid-identity assertions for every output |
-| U-Net can be trained locally | ✅ | 20 epochs on CPU, 74 min, 7.24 M parameters; best val mIoU 0.849; test mIoU 0.733, tree IoU 0.939 |
+| U-Net can be trained locally | ✅ | v1: 20 epochs on CPU, 74 min, test mIoU 0.733; v2 (default): test mIoU 0.740, tree IoU 0.940, bare F1 0.324 |
 | Real segmentation predictions | ✅ | segmentation of the 2025 observation |
 | Forest probability maps displayed | ✅ | map and segmentation pages |
 | Two observation dates compared | ✅ | change runs |
@@ -67,5 +67,6 @@ Status key: ✅ done and verified · ⚠️ done with a stated limitation · ❌
 * **Dynamic World** labels are supported in code (`labels/dynamic_world.py`, `scripts/export_dynamic_world.py`) but not used: no Earth Engine account was configured.
 * **CDSE authenticated download** is implemented as a token flow but not verified (no credentials). Earth Search (no credentials) is the working provider.
 * **GPU path** (CUDA wheels, mixed precision) is implemented but untested: no GPU here.
+* **Potential gain** uses a stricter rule than loss (see docs/change-detection.md), since one-year gain was mostly pasture or regrowth edges.
 * **Sample-based area estimation** (Olofsson) is not implemented; areas are mapped areas with boundary uncertainty. Analyst reviews are stored as a first step.
-* **Bare/sparse class** is weak (rare in the training labels).
+* **Bare/sparse class** is still weak (F1 0.32 with v2, up from 0.27; 0.3% of training labels).

@@ -50,7 +50,7 @@ powershell -ExecutionPolicy Bypass -File .\stop.ps1
 
 ### First run walkthrough
 
-The U-Net trained for this project (`unet-base32-v1`, see `docs/model-card.md`) ships in `models/` and is registered and activated automatically on first start, so you can analyse imagery immediately (steps 4–6). Steps 1–3 retrain or re-evaluate your own model.
+The U-Nets trained for this project ship in `models/` (`unet-base32-v2` is the default; see `docs/model-card.md`); the default one is registered and activated automatically on first start, so you can analyse imagery immediately (steps 4–6). Steps 1–3 retrain or re-evaluate your own model.
 
 1. **Datasets** → *Build missing* (or `setup.ps1 -WithTrainingData`) to download the training regions.
 2. **Model Lab** → configure and *Start training*. The quick profile (width 16, 10 epochs) takes roughly 15–40 minutes on a laptop CPU; then click *Use for analysis*.

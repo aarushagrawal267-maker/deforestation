@@ -1,4 +1,53 @@
-# Model card: `unet-base32-v1`
+# Model card: `unet-base32-v2` (default)
+
+`unet-base32-v2` is the model activated on a fresh install. It is the same architecture, data, regions and
+schedule as `unet-base32-v1` (documented in full below), with two training changes aimed at the weak
+bare/sparse class, which v1 over-predicted (precision 0.17, recall 0.61):
+
+* **Rare-class crop sampling:** 25% of training crops are centred on a pixel of a rare class (< 5% of labels:
+  bare/sparse and water), so the model sees more real examples.
+* **Milder class weights:** freq^-0.25 instead of freq^-0.5 (bare/sparse weight 2.0 instead of 3.2).
+
+| | |
+|---|---|
+| Config | `configs/training/v2.yaml` (seed 42) |
+| Training | CPU, early-stopped at epoch 18; selected epoch 11 (best validation mIoU **0.858**) |
+| Calibration | T = **1.030**; validation ECE 0.0045 → **0.0023** |
+| Checkpoint | `models/unet-base32-v2/best.pt`, SHA-256 `d6bede73dfbc987d943d4d034ba8ec1922e0ff7eea705f3206a0dceb5fa7f7c6` |
+| Initialisation | random. **No pretrained or external model.** |
+
+### Test regions (Novo Progresso, Puerto Maldonado; never used for training, selection or calibration)
+
+| Metric | v1 | **v2** |
+|---|---|---|
+| Mean IoU (5 classes) | 0.733 | **0.740** |
+| Mean Dice | 0.801 | **0.811** |
+| Overall agreement | 94.89% | 94.93% |
+| Tree cover IoU | 0.939 | 0.940 |
+| Other vegetation IoU | 0.841 | 0.844 |
+| Bare / sparse IoU / precision / recall / F1 | 0.157 / 0.174 / 0.611 / 0.271 | **0.193 / 0.220 / 0.615 / 0.324** |
+| Water IoU | 0.957 | 0.956 |
+| Built-up IoU | 0.773 | 0.766 |
+| Tree vs Hansen F1 | 0.797 | 0.797 |
+
+The bare/sparse class improved (F1 +0.05) but **is still unreliable**: it is 0.3% of the training labels and
+2,370 pixels in the test regions, so these numbers are noisy. Built-up dropped slightly. The improvement is modest
+and comes from one training run per configuration (no repeated seeds).
+
+### Change-detection runs with v2 (Novo Progresso, stricter gain rule)
+
+| Run | Dates | Potential loss | Regions | Hansen-corroborated | Spectrally supported | Model only | Potential gain |
+|---|---|---|---|---|---|---|---|
+| `chg_15636eb9be` | 2024-07-09 → 2025-07-19 | **581.9 ± 106.1 ha** | 221 | 106 | 110 | 5 | 2.9 ha (5 regions) |
+| `chg_b619870dfc` | 2023-07-30 → 2024-07-09 (+ 2025 persistence) | **304.8 ± 70.8 ha** | 176 | 57 | 68 | 51 | 1.1 ha (1 region) |
+
+v2 flags more potential loss than v1 (581.9 vs 489.3 ha for 2024 → 2025) and more of it is Hansen-corroborated
+(106 vs 88 regions). In the 2023 → 2024 run, 103 of 176 loss regions were still non-forest in July 2025.
+Gain uses the stricter rule described in `docs/change-detection.md`. As with v1, none of this is verified deforestation.
+
+---
+
+# Previous model: `unet-base32-v1`
 
 | | |
 |---|---|
