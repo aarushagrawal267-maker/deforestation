@@ -4,7 +4,10 @@ from __future__ import annotations
 
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from pathlib import Path
+
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from forestwatch.settings import configure_gdal_env, get_settings
@@ -31,6 +34,10 @@ app = FastAPI(
     ),
     version="1.0.0",
     lifespan=lifespan,
+    # when the frontend is served from the same origin, its /docs page must not clash with Swagger
+    docs_url="/api/docs" if get_settings().frontend_dist else "/docs",
+    redoc_url=None,
+    openapi_url="/api/openapi.json" if get_settings().frontend_dist else "/openapi.json",
 )
 app.add_middleware(
     CORSMiddleware,
@@ -40,3 +47,18 @@ app.add_middleware(
 )
 for r in (system, aois, catalog, products, tiles, datasets, models, analyses):
     app.include_router(r.router, prefix="/api")
+
+
+_dist = get_settings().frontend_dist
+if _dist:
+    _dist = Path(_dist).resolve()
+
+    @app.get("/{path:path}", include_in_schema=False)
+    def spa(path: str):
+        """Serve the built frontend; unknown paths fall back to index.html (client-side routing)."""
+        if path.startswith("api/"):
+            raise HTTPException(404)
+        f = (_dist / path).resolve()
+        if path and f.is_file() and f.is_relative_to(_dist):
+            return FileResponse(f)
+        return FileResponse(_dist / "index.html")

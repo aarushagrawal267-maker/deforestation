@@ -37,6 +37,8 @@ class Settings(BaseSettings):
     max_aoi_km2: float = 2500.0
     device: str = "auto"  # auto | cpu | cuda
 
+    # Single-port deployment (e.g. a container): serve the built frontend from this directory
+    frontend_dist: Path | None = None
     cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
 
     @property
