@@ -28,6 +28,10 @@ def tmp_data_dir(tmp_path, monkeypatch):
     from forestwatch.settings import get_settings
 
     get_settings.cache_clear()
+    import app.services.registry as registry
+
+    # API tests control which models exist; don't install the bundled one
+    monkeypatch.setattr(registry, "BUNDLED_MODELS", tmp_path / "no-bundled-models")
     from app.db.session import reset_engine
 
     reset_engine()

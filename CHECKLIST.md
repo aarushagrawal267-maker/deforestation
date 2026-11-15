@@ -14,7 +14,7 @@ Status key: ✅ done and verified · ⚠️ done with a stated limitation · ❌
 | 5 | Cloud & shadow masking | ✅ | SCL + cloud probability + 40 m buffer; `test_quality_codes_and_buffer` |
 | 6 | Geospatial alignment | ✅ | shared UTM grids; georeference-identity tests through segmentation and change outputs; phase-correlation co-registration test |
 | 7 | Training dataset preparation | ✅ | `forestwatch/regions.py`; 10 real regions with label reports |
-| 8 | U-Net model | ✅ | `forestwatch/ml/unet.py`, from scratch, skip connections tested |
+| 8 | U-Net model | ✅ | `forestwatch/ml/unet.py`, from scratch, skip connections tested; trained checkpoint shipped in `models/unet-base32-v1` and auto-activated on a fresh install (API test) |
 | 9 | Training pipeline | ✅ | real 20-epoch CPU run through the worker; epochs stored in SQLite |
 | 10 | Model evaluation | ✅ | held-out test regions; see `docs/model-card.md` |
 | 11 | Forest probability maps | ✅ | segmentation runs → `probs.tif`; map layers |

@@ -14,7 +14,9 @@ import torch
 from sqlalchemy import select
 
 from forestwatch.ml.infer import file_sha256
-from forestwatch.settings import get_settings
+import shutil
+
+from forestwatch.settings import REPO_ROOT, get_settings
 
 from ..db.init import get_setting, set_setting
 from ..db.models import EpochMetric, Experiment
@@ -57,8 +59,26 @@ def import_model_dir(d: Path) -> str | None:
         return exp.id
 
 
+BUNDLED_MODELS = REPO_ROOT / "models"
+
+
+def install_bundled_models(root: Path) -> None:
+    """Copy models shipped in the repository (``models/<name>``) into the data directory once,
+    so a fresh install can analyse imagery without retraining. They are this project's own
+    trained U-Nets (see docs/model-card.md), not external models."""
+    if not BUNDLED_MODELS.exists():
+        return
+    for src in BUNDLED_MODELS.iterdir():
+        dst = root / src.name
+        if src.is_dir() and (src / "best.pt").exists() and not dst.exists():
+            dst.mkdir(parents=True)
+            for f in ("best.pt", "result.json"):
+                shutil.copy2(src / f, dst / f)
+
+
 def import_cli_models() -> list[str]:
     root = get_settings().data_dir / "models"
+    install_bundled_models(root)
     if not root.exists():
         return []
     with SessionLocal() as db:

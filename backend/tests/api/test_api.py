@@ -170,3 +170,20 @@ def test_full_change_workflow(tmp_data_dir, fixture_products):
         from app.db.models import ChangeRegion
 
         assert db.query(ChangeRegion).count() == len(fc["features"])
+
+
+def test_bundled_model_installed_on_fresh_start(tmp_data_dir, monkeypatch):
+    """A fresh install registers and activates the U-Net shipped in models/ (no retraining needed)."""
+    import app.services.registry as registry
+
+    src = tmp_data_dir / "bundle" / "tiny-v1"
+    src.mkdir(parents=True)
+    torch.save({"state_dict": UNet(10, 5, 8, 2).state_dict(), "train_config": {"name": "tiny-v1", "bands": list(BAND_NAMES)}},
+               src / "best.pt")
+    (src / "result.json").write_text(json.dumps({"status": "completed", "best_val_miou": 0.5, "history": []}))
+    monkeypatch.setattr(registry, "BUNDLED_MODELS", tmp_data_dir / "bundle")
+    with _client() as c:
+        exps = c.get("/api/experiments").json()
+        assert [e["name"] for e in exps] == ["tiny-v1"]
+        assert c.get("/api/settings").json()["active_experiment_id"] == exps[0]["id"]
+    assert (tmp_data_dir / "models" / "tiny-v1" / "best.pt").exists()
