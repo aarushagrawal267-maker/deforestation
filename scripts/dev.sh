@@ -12,4 +12,4 @@ echo $! > "$ROOT/logs/worker.pid"
 cd "$ROOT/frontend"
 npx vite --port 5173 --strictPort > "$ROOT/logs/frontend.log" 2>&1 &
 echo $! > "$ROOT/logs/frontend.pid"
-echo "Sylva: http://localhost:5173  API: http://localhost:8000/docs  (stop: kill \$(cat logs/*.pid))"
+echo "Sylva: http://localhost:5173  API: http://localhost:8000/docs  (stop: ./scripts/stop.sh)"
