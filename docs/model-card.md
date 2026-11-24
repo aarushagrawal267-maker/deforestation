@@ -34,6 +34,29 @@ The bare/sparse class improved (F1 +0.05) but **is still unreliable**: it is 0.3
 2,370 pixels in the test regions, so these numbers are noisy. Built-up dropped slightly. The improvement is modest
 and comes from one training run per configuration (no repeated seeds).
 
+### Independent re-check (2026-11-24, fresh rebuild of the test regions)
+
+The two test regions were rebuilt from scratch on a clean checkout (`python -m forestwatch.cli build-regions --only
+peru_puerto_maldonado --only para_novo_progresso`) and both shipped checkpoints were re-evaluated with
+`python -m forestwatch.cli evaluate models/<name>/best.pt` (Linux, CPU, torch 2.15.0+cpu):
+
+| Metric (pooled, 2,887,273 px) | v1 | v2 |
+|---|---|---|
+| Mean IoU (5 classes) | 0.715 | 0.714 |
+| Mean Dice | 0.788 | 0.793 |
+| Overall agreement | 94.85% | 94.24% |
+| Tree cover IoU | 0.942 | 0.934 |
+| Bare / sparse F1 | 0.257 | 0.308 |
+| Tree vs Hansen F1 | 0.807 | 0.808 |
+| mIoU Novo Progresso / Puerto Maldonado | 0.662 / 0.687 | 0.672 / 0.669 |
+
+Novo Progresso rebuilt identically (v1 per-region mIoU 0.662, as in the original evaluation). Puerto Maldonado did
+not: the catalogue now returns a same-day two-scene mosaic (`S2B_T19LDG_20210814T144726_L2A` +
+`S2B_T19LDG_20210814T145620_L2A`), and the labelled pixel count differs slightly (2,887,273 vs 2,886,812), so the
+pooled numbers above are lower than the original table, mostly through the water and built-up classes. On this
+rebuild v2 is **not** clearly better than v1 overall; it keeps its gain on the bare/sparse class (F1 0.31 vs 0.26).
+Treat the difference between the two models as within run-to-run and data-version noise.
+
 ### Change-detection runs with v2 (Novo Progresso, stricter gain rule)
 
 | Run | Dates | Potential loss | Regions | Hansen-corroborated | Spectrally supported | Model only | Potential gain |

@@ -133,7 +133,9 @@ cd frontend && npm test                          # component tests
 cd frontend && npx playwright test               # end-to-end (app must be running)
 ```
 
-Last verified run (Linux, CPU only): backend 53 passed, 3 skipped (live-provider tests, enabled with `SYLVA_RUN_NETWORK=1`); frontend 8 passed; Playwright 14 passed.
+The first time, install Playwright's browser with `npx playwright install chromium` (or point `PW_CHROMIUM_PATH` at an existing Chromium). `SYLVA_URL=http://localhost:4173 npx playwright test` runs the same checks against a production build served by `npx vite preview --port 4173`.
+
+Last verified run (2026-11-24, Linux, CPU only): backend 54 passed, 3 skipped (live-provider tests, enabled with `SYLVA_RUN_NETWORK=1`); frontend 8 passed; Playwright 14 passed against both the dev server and the production build; `npm audit` reports 0 vulnerabilities.
 
 ## Deploying online (optional)
 
@@ -144,6 +146,8 @@ pip install huggingface_hub
 export HF_TOKEN=hf_...            # a write token from huggingface.co/settings/tokens
 backend/.venv/bin/python scripts/deploy_hf_space.py --repo <your-hf-username>/sylva
 ```
+
+In the hosted Space the API and the built frontend share one origin, so the interactive API documentation moves from `/docs` to `/api/swagger`.
 
 ## Repository layout
 

@@ -37,9 +37,9 @@ Status key: ✅ done and verified · ⚠️ done with a stated limitation · ❌
 | 28 | Scientific methodology | ✅ | `docs/methodology.md`, `docs/change-detection.md`, `docs/unet.md` |
 | 29 | Research references | ✅ | `docs/references.md` |
 | 30 | Limitations & reproducibility | ✅ | `docs/limitations.md`, `docs/reproducibility.md`, `docs/model-card.md` |
-
 | 31 | LICENSE | ✅ | `LICENSE` (MIT for code; data keeps its own licences) |
 | 32 | Linux/macOS start & stop scripts | ✅ | `scripts/dev.sh`, `scripts/stop.sh` (stops the whole process tree) |
+| 33 | Dependency security | ✅ | `npm audit`: 0 vulnerabilities after upgrading maplibre-gl 4→6, react-router-dom 6→7, vite 6.0→6.4, vitest 2→4, @playwright/test 1.49→1.63 (2026-11-24); `ruff check` clean |
 
 ## Acceptance criteria
 
@@ -51,7 +51,7 @@ Status key: ✅ done and verified · ⚠️ done with a stated limitation · ❌
 | Preprocessing works | ✅ | unit and integration tests on real fixture crops |
 | Cloud and shadow masking works | ✅ | quality codes tested; quality summaries per observation |
 | Geospatial alignment preserved | ✅ | grid-identity assertions for every output |
-| U-Net can be trained locally | ✅ | v1: 20 epochs on CPU, 74 min, test mIoU 0.733; v2 (default): test mIoU 0.740, tree IoU 0.940, bare F1 0.324 |
+| U-Net can be trained locally | ✅ | v1: 20 epochs on CPU, 74 min, test mIoU 0.733; v2 (default): test mIoU 0.740, tree IoU 0.940, bare F1 0.324. Re-check on freshly rebuilt test regions (2026-11-24): v1 0.715, v2 0.714 mIoU (Puerto Maldonado rebuilt from a different scene mosaic; see model card) |
 | Real segmentation predictions | ✅ | segmentation of the 2025 observation |
 | Forest probability maps displayed | ✅ | map and segmentation pages |
 | Two observation dates compared | ✅ | change runs |
@@ -61,7 +61,7 @@ Status key: ✅ done and verified · ⚠️ done with a stated limitation · ❌
 | Geospatial results exported | ✅ | GeoJSON / GPKG / CSV / GeoTIFF / bundle with provenance; API test downloads zips |
 | Evaluation metrics from actual results | ✅ | `data/evaluations/<id>/evaluation.json` |
 | Experiment history saved | ✅ | history page and tables |
-| Important features pass automated tests | ✅ | backend pytest 53 passed, 3 skipped (re-run 2026-11-24, Linux CPU) (+3 live-provider tests passed with `SYLVA_RUN_NETWORK=1`); frontend vitest 8 passed; Playwright e2e 14 passed |
+| Important features pass automated tests | ✅ | backend pytest 54 passed, 3 skipped (re-run 2026-11-24, Linux CPU, after the dependency upgrade) (+3 live-provider tests passed with `SYLVA_RUN_NETWORK=1`); frontend vitest 8 passed; Playwright e2e 14 passed against both the dev server and the production build (`vite preview`) and the single-origin hosted mode (`SYLVA_FRONTEND_DIST`, where Swagger now lives at `/api/swagger` so it no longer hides the docs list) |
 | Documentation explains reproduction | ✅ | `docs/reproducibility.md` |
 
 ## Known gaps / not done
