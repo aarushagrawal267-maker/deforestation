@@ -3,12 +3,11 @@
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
-
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 
 from forestwatch.settings import configure_gdal_env, get_settings
 
@@ -34,8 +33,9 @@ app = FastAPI(
     ),
     version="1.0.0",
     lifespan=lifespan,
-    # when the frontend is served from the same origin, its /docs page must not clash with Swagger
-    docs_url="/api/docs" if get_settings().frontend_dist else "/docs",
+    # when the frontend is served from the same origin, its /docs page must not clash with Swagger,
+    # and Swagger must not shadow the GET /api/docs endpoint that lists the methodology documents
+    docs_url="/api/swagger" if get_settings().frontend_dist else "/docs",
     redoc_url=None,
     openapi_url="/api/openapi.json" if get_settings().frontend_dist else "/openapi.json",
 )

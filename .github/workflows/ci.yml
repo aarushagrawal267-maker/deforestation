@@ -17,6 +17,7 @@ jobs:
         run: |
           pip install torch --index-url https://download.pytorch.org/whl/cpu
           pip install -r requirements-dev.txt
+          ruff check .
           python -m pytest -q
       - name: Frontend typecheck, unit tests, build
         working-directory: frontend

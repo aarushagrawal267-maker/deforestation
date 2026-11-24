@@ -7,6 +7,7 @@ from the run's ``result.json`` and the checkpoint written by the training loop.
 from __future__ import annotations
 
 import json
+import shutil
 from datetime import datetime
 from pathlib import Path
 
@@ -14,8 +15,6 @@ import torch
 from sqlalchemy import select
 
 from forestwatch.ml.infer import file_sha256
-import shutil
-
 from forestwatch.settings import REPO_ROOT, get_settings
 
 from ..db.init import get_setting, set_setting

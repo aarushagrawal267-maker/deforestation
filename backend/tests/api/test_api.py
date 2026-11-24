@@ -67,6 +67,32 @@ def test_health_system_and_docs(tmp_data_dir):
         assert c.get("/openapi.json").json()["info"]["title"].startswith("Sylva")
 
 
+def test_single_origin_mode_keeps_docs_endpoint(tmp_data_dir, tmp_path, monkeypatch):
+    """Hosted mode (frontend served by the API): Swagger must not shadow GET /api/docs."""
+    import importlib
+
+    import app.main as main
+    from forestwatch.settings import get_settings
+
+    dist = tmp_path / "dist"
+    dist.mkdir()
+    (dist / "index.html").write_text("<!doctype html><title>Sylva</title>")
+    monkeypatch.setenv("SYLVA_FRONTEND_DIST", str(dist))
+    get_settings.cache_clear()
+    try:
+        importlib.reload(main)
+        with TestClient(main.app) as c:
+            docs = c.get("/api/docs").json()
+            assert any(d["slug"] == "methodology" for d in docs)
+            assert c.get("/api/swagger").status_code == 200
+            assert c.get("/api/openapi.json").json()["info"]["title"].startswith("Sylva")
+            assert "Sylva" in c.get("/docs").text  # the SPA, not Swagger
+    finally:
+        monkeypatch.delenv("SYLVA_FRONTEND_DIST")
+        get_settings.cache_clear()
+        importlib.reload(main)
+
+
 def test_default_aoi_and_validation(tmp_data_dir):
     with _client() as c:
         aois = c.get("/api/aois").json()
