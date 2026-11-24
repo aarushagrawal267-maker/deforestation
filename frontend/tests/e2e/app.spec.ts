@@ -44,7 +44,7 @@ test("map renders real Sentinel-2 tiles on the explorer", async ({ page }) => {
 
 test("docs page lists methodology documents", async ({ page }) => {
   await page.goto("/docs");
-  await expect(page.getByRole("link", { name: "Change detection" })).toBeVisible();
-  await page.getByRole("link", { name: "Limitations" }).click();
+  await expect(page.getByRole("link", { name: "Change detection", exact: true })).toBeVisible();
+  await page.getByRole("link", { name: "Limitations", exact: true }).click();
   await expect(page.locator("article h1", { hasText: "Limitations" })).toBeVisible();
 });

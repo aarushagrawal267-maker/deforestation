@@ -1,5 +1,11 @@
-import maplibregl, { type LngLatBoundsLike, type Map as MLMap, type StyleSpecification } from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
+import type { LngLatBoundsLike, Map as MLMap, StyleSpecification } from "maplibre-gl";
+// MapLibre GL 5+ loads its web worker from a separate module. Let Vite copy it into the build
+// and tell MapLibre where it is, so the map works both in the dev server and in production builds.
+import maplibreWorkerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?url";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+
+maplibregl.setWorkerUrl(maplibreWorkerUrl);
 
 export type RasterLayer = {
   id: string;
