@@ -32,11 +32,14 @@ Status key: ✅ done and verified · ⚠️ done with a stated limitation · ❌
 | 23 | Windows setup script | ✅ | `setup.ps1` run successfully on GitHub Actions `windows-latest` |
 | 24 | Windows startup script | ✅ | `start.ps1`, then health checks of API, docs, frontend and proxy on `windows-latest` |
 | 25 | Windows shutdown script | ✅ | `stop.ps1`; verified port 8000 released on `windows-latest` |
-| 26 | README | ✅ | `README.md` |
+| 26 | README | ✅ | `README.md` (screenshots, how it works, tech stack, limitations, license) |
 | 27 | Dataset documentation | ✅ | `docs/datasets.md` |
 | 28 | Scientific methodology | ✅ | `docs/methodology.md`, `docs/change-detection.md`, `docs/unet.md` |
 | 29 | Research references | ✅ | `docs/references.md` |
 | 30 | Limitations & reproducibility | ✅ | `docs/limitations.md`, `docs/reproducibility.md`, `docs/model-card.md` |
+
+| 31 | LICENSE | ✅ | `LICENSE` (MIT for code; data keeps its own licences) |
+| 32 | Linux/macOS start & stop scripts | ✅ | `scripts/dev.sh`, `scripts/stop.sh` (stops the whole process tree) |
 
 ## Acceptance criteria
 
@@ -58,7 +61,7 @@ Status key: ✅ done and verified · ⚠️ done with a stated limitation · ❌
 | Geospatial results exported | ✅ | GeoJSON / GPKG / CSV / GeoTIFF / bundle with provenance; API test downloads zips |
 | Evaluation metrics from actual results | ✅ | `data/evaluations/<id>/evaluation.json` |
 | Experiment history saved | ✅ | history page and tables |
-| Important features pass automated tests | ✅ | backend pytest 50 passed (+3 live-provider tests passed with `SYLVA_RUN_NETWORK=1`); frontend vitest 8 passed; Playwright e2e 14 passed |
+| Important features pass automated tests | ✅ | backend pytest 53 passed, 3 skipped (re-run 2026-11-24, Linux CPU) (+3 live-provider tests passed with `SYLVA_RUN_NETWORK=1`); frontend vitest 8 passed; Playwright e2e 14 passed |
 | Documentation explains reproduction | ✅ | `docs/reproducibility.md` |
 
 ## Known gaps / not done

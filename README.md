@@ -23,6 +23,37 @@ Sylva is a locally run research platform. It segments tree cover in **real Coper
 * **Interactive Forest Map:** MapLibre layers for imagery, probability, classes, change categories, ΔP, regions, WorldCover and Hansen loss year, with legends, opacity, swipe mode and a pixel/region inspector.
 * **Dataset Explorer, Monitoring History and Research & Docs** pages. Exports (GeoJSON, GeoPackage, CSV, GeoTIFF, bundle) carry a `provenance.json`.
 
+## Screenshots
+
+Captured from a fresh install after `python -m forestwatch.cli sample-data` and one change analysis (24 Jul 2024 → 19 Jul 2025, Novo Progresso, Brazil) with the bundled `unet-base32-v2` model.
+
+| Overview | Forest map |
+|---|---|
+| ![Overview dashboard](docs/images/overview.png) | ![Interactive forest map with potential-loss regions](docs/images/forest-map.png) |
+| **Change detection** | **Forest-loss investigation** |
+| ![Change detection centre](docs/images/change-detection.png) | ![Detected regions table](docs/images/investigation.png) |
+| **Satellite image explorer** | **Model laboratory** |
+| ![Sentinel-2 image explorer](docs/images/image-explorer.png) | ![Model lab](docs/images/model-lab.png) |
+
+## How it works
+
+1. **Acquire**: search the Earth Search STAC catalogue for Sentinel-2 L2A scenes over the area of interest and read only the needed window of each cloud-optimised GeoTIFF.
+2. **Prepare**: scale reflectances, harmonise processing baselines, mask cloud and shadow (SCL + cloud probability + 40 m buffer) and resample every date onto one shared 10 m UTM grid.
+3. **Segment**: the U-Net turns the 10 bands into calibrated per-pixel probabilities of tree cover (plus other vegetation, bare, water and built-up classes).
+4. **Compare**: pixels that were confidently forest on the earlier date and confidently non-forest on the later date (with quality and optional spectral checks) become *potential loss*; they are vectorised into regions of at least 0.5 ha.
+5. **Investigate**: each region gets area ± boundary uncertainty, spectral indices, image chips and a comparison with Hansen Global Forest Change, and an analyst can record a review. Results export to GeoJSON, GeoPackage, CSV or GeoTIFF.
+
+## Tech stack
+
+| Layer | Technologies |
+|---|---|
+| Machine learning | PyTorch (U-Net written from scratch), scikit-learn, NumPy |
+| Geospatial | rasterio, rio-tiler, pyproj, shapely, GeoPandas, pyogrio, pystac-client, OpenCV |
+| Backend | Python 3.11–3.13, FastAPI, Uvicorn, SQLAlchemy 2 + SQLite (WAL), background job worker, Typer CLI |
+| Frontend | React 18, TypeScript, Vite, Tailwind CSS 4, MapLibre GL, Recharts, TanStack Query, Zustand |
+| Testing | pytest, Vitest + Testing Library, Playwright |
+| Ops | PowerShell setup/start/stop scripts for Windows, bash scripts for Linux/macOS, GitHub Actions CI, Docker recipe for Hugging Face Spaces |
+
 ## Windows quick start
 
 Prerequisites: Windows 10/11, **Python 3.11–3.13**, **Node.js 20+**, about 5 GB free disk (more for training data). An NVIDIA GPU is optional.
@@ -65,8 +96,11 @@ The U-Nets trained for this project ship in `models/` (`unet-base32-v2` is the d
 cd backend && python3.12 -m venv .venv && source .venv/bin/activate
 pip install torch --index-url https://download.pytorch.org/whl/cpu && pip install -r requirements-dev.txt
 cd ../frontend && npm ci && cd .. && cp .env.example .env
-./scripts/dev.sh
+./scripts/dev.sh        # starts API, worker and frontend in the background
+./scripts/stop.sh       # stops them again
 ```
+
+Optional: `python -m forestwatch.cli sample-data` (from `backend/` with the venv active) downloads the two sample observations so the Change Detection page has something to compare.
 
 ## Data access & credentials
 
@@ -99,6 +133,18 @@ cd frontend && npm test                          # component tests
 cd frontend && npx playwright test               # end-to-end (app must be running)
 ```
 
+Last verified run (Linux, CPU only): backend 53 passed, 3 skipped (live-provider tests, enabled with `SYLVA_RUN_NETWORK=1`); frontend 8 passed; Playwright 14 passed.
+
+## Deploying online (optional)
+
+`scripts/deploy_hf_space.py` packages the app, the bundled models and your local demo data into a Docker-based Hugging Face Space (`deploy/huggingface/`). It needs your own Hugging Face account and token:
+
+```bash
+pip install huggingface_hub
+export HF_TOKEN=hf_...            # a write token from huggingface.co/settings/tokens
+backend/.venv/bin/python scripts/deploy_hf_space.py --repo <your-hf-username>/sylva
+```
+
 ## Repository layout
 
 ```
@@ -109,7 +155,9 @@ backend/
 frontend/             React + TypeScript + Vite + Tailwind + MapLibre + Recharts (11 pages)
 configs/              regions.yaml (training split), training/*.yaml
 docs/                 methodology, datasets, U-Net, change detection, model card, limitations, reproducibility, references
-scripts/              dev.sh, export_dynamic_world.py
+scripts/              dev.sh, stop.sh, export_dynamic_world.py, deploy_hf_space.py
+deploy/huggingface/   Dockerfile + start script for a hosted demo
+models/               trained U-Net checkpoints (v1, v2) and the DEFAULT pointer
 setup.ps1 start.ps1 stop.ps1
 CHECKLIST.md          development checklist and acceptance status
 ```
@@ -117,6 +165,20 @@ CHECKLIST.md          development checklist and acceptance status
 ## Documentation
 
 See `docs/` (also rendered in the app under *Research & Docs*): [overview](docs/overview.md), [methodology](docs/methodology.md), [Sentinel-2](docs/sentinel2.md), [U-Net](docs/unet.md), [change detection](docs/change-detection.md), [datasets](docs/datasets.md), [model card](docs/model-card.md), [limitations](docs/limitations.md), [reproducibility](docs/reproducibility.md), [references](docs/references.md).
+
+## Limitations
+
+* Detected regions are **potential** forest-cover changes, not verified deforestation; the cause of a change cannot be determined from imagery alone.
+* Training labels are weak labels derived from ESA WorldCover, so metrics measure agreement with a reference map, not with field ground truth. The bare/sparse class is weak (F1 0.32 with v2).
+* Areas are mapped areas with boundary uncertainty; sample-based (Olofsson) area estimation is not implemented.
+* Sylva analyses archived acquisitions; it is not a real-time alerting system. Cloudy seasons reduce the usable observations.
+* The CDSE authenticated download, Dynamic World labels and the CUDA/GPU path are implemented but not verified (they need accounts or a GPU).
+
+Full details: [docs/limitations.md](docs/limitations.md) and [CHECKLIST.md](CHECKLIST.md).
+
+## License
+
+Source code: [MIT](LICENSE). Data products keep their own licences (below).
 
 ## Attribution
 
