@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { api, tileUrl } from "../api/client";
 import { useAOIs, useCategories, useChangeRun, useChangeRuns, useExperiments, useInvalidate, useProducts, useRegionsGeo } from "../api/hooks";
 import type { ChangeRun, ExportRow, RegionProps } from "../api/types";
-import { DeltaRamp, LegendRow } from "../components/map/Legend";
+import { CHANGE_LEGEND, DeltaRamp, LegendRow } from "../components/map/Legend";
 import { MapView, type MapLayer } from "../components/map/MapView";
 import { ObservationSelect } from "../components/ObservationSelect";
 import { Button, Card, Empty, Field, Input, JobProgress, KV, Notice, PageHeader, Select, StatusBadge, Tabs } from "../components/ui";
@@ -223,7 +223,7 @@ export default function ChangePage() {
                 </div>
               )}
               {run?.status === "succeeded" && s && (
-                <div className="absolute bottom-3 left-3 w-60 space-y-1.5 rounded-lg border border-line bg-canvas/90 p-3">
+                <div className="absolute bottom-10 left-3 w-64 space-y-1.5 rounded-lg border border-line bg-canvas/90 p-3">
                   {layer === "delta" ? (
                     <DeltaRamp />
                   ) : (
@@ -232,7 +232,7 @@ export default function ChangePage() {
                       .map((c) => (
                         <LegendRow
                           key={c.key}
-                          swatch={c.key === "uncertain" ? "hatch-uncertain" : c.key === "invalid" ? "hatch-invalid" : ""}
+                          swatch={CHANGE_LEGEND.find((l) => l.key === c.key)?.swatch ?? ""}
                           label={c.name}
                           value={fmtHa(s.category_areas[c.key]?.hectares)}
                         />

@@ -12,10 +12,10 @@ export function LegendRow({ swatch, label, value }: { swatch: string; label: str
   return (
     <div className="flex items-center justify-between gap-3 text-[11px]">
       <span className="flex items-center gap-2 text-ink-2">
-        <span className={clsx("inline-block h-3 w-3 rounded-[3px] border border-white/10", swatch)} />
+        <span className={clsx("inline-block h-3 w-3 shrink-0 rounded-[3px] border border-white/10", swatch)} />
         {label}
       </span>
-      {value && <span className="num text-muted">{value}</span>}
+      {value && <span className="num whitespace-nowrap text-muted">{value}</span>}
     </div>
   );
 }
