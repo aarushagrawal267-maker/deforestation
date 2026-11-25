@@ -35,6 +35,32 @@ def _block_mode(a: np.ndarray, f: int = 3) -> np.ndarray:
     return a[:H, :W].reshape(H // f, f, W // f, f).mean(axis=(1, 3))
 
 
+def pooled_binary_metrics(d: dict) -> dict:
+    """Binary metrics from summed tp/fp/fn/tn counts (pooled over regions)."""
+    tp, fp, fn, tn = d["tp"], d["fp"], d["fn"], d["tn"]
+    p = tp / (tp + fp) if tp + fp else None
+    rc = tp / (tp + fn) if tp + fn else None
+    return {
+        "precision": p,
+        "recall": rc,
+        "f1": 2 * p * rc / (p + rc) if p and rc else None,
+        "iou": tp / (tp + fp + fn) if tp + fp + fn else None,
+        "accuracy": (tp + tn) / max(1, tp + fp + fn + tn),
+        **d,
+    }
+
+
+def hansen_tree_agreement(regions_dir: Path, name: str, year: int, tree: np.ndarray, valid_px: np.ndarray) -> dict:
+    """Binary agreement of a 10 m tree mask with Hansen tree cover at ~30 m (3x3 block majority)."""
+    href, hvalid = hansen_tree_reference(regions_dir, name, year)
+    tree_frac = _block_mode(np.where(valid_px, tree, 0).astype(np.float32))
+    valid_frac = _block_mode(valid_px.astype(np.float32))
+    h_frac = _block_mode(href.astype(np.float32))
+    hv = _block_mode(hvalid.astype(np.float32)) == 1
+    v = (valid_frac == 1) & hv
+    return binary_metrics(tree_frac >= 0.5, h_frac >= 0.5, v)
+
+
 def evaluate_checkpoint(ckpt_path: Path, regions_dir: Path, region_names: list[str], out_dir: Path, progress=None) -> dict:
     model, ckpt = load_checkpoint(ckpt_path)
     tc = ckpt.get("train_config") or {}
@@ -59,15 +85,8 @@ def evaluate_checkpoint(ckpt_path: Path, regions_dir: Path, region_names: list[s
         total_cm += cm
         m = metrics_from_confusion(cm, CLASS_NAMES)
 
-        # Hansen agreement at ~30 m (3x3 block aggregation of 10 m predictions)
         year = int(r.meta.get("label_year", 2021))
-        href, hvalid = hansen_tree_reference(regions_dir, name, year)
-        tree_frac = _block_mode(np.where(valid_px, pred == TREE, 0).astype(np.float32))
-        valid_frac = _block_mode(valid_px.astype(np.float32))
-        h_frac = _block_mode(href.astype(np.float32))
-        hv = _block_mode(hvalid.astype(np.float32)) == 1
-        v = (valid_frac == 1) & hv
-        hm = binary_metrics(tree_frac >= 0.5, h_frac >= 0.5, v)
+        hm = hansen_tree_agreement(regions_dir, name, year, pred == TREE, valid_px)
         for k in hansen_all:
             hansen_all[k] += hm[k]
 
@@ -88,24 +107,11 @@ def evaluate_checkpoint(ckpt_path: Path, regions_dir: Path, region_names: list[s
         if progress:
             progress((i + 1) / len(region_names), f"evaluated {name}")
 
-    def agg(d):
-        tp, fp, fn, tn = d["tp"], d["fp"], d["fn"], d["tn"]
-        p = tp / (tp + fp) if tp + fp else None
-        rc = tp / (tp + fn) if tp + fn else None
-        return {
-            "precision": p,
-            "recall": rc,
-            "f1": 2 * p * rc / (p + rc) if p and rc else None,
-            "iou": tp / (tp + fp + fn) if tp + fp + fn else None,
-            "accuracy": (tp + tn) / max(1, tp + fp + fn + tn),
-            **d,
-        }
-
     result = {
         "checkpoint": str(ckpt_path),
         "regions": region_names,
         "overall_reference_agreement": metrics_from_confusion(total_cm, CLASS_NAMES),
-        "overall_hansen_tree_agreement": agg(hansen_all),
+        "overall_hansen_tree_agreement": pooled_binary_metrics(hansen_all),
         "per_region": per_region,
         "calibration": ckpt.get("calibration"),
         "notes": [

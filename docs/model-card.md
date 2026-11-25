@@ -16,7 +16,7 @@ bare/sparse class, which v1 over-predicted (precision 0.17, recall 0.61):
 | Checkpoint | `models/unet-base32-v2/best.pt`, SHA-256 `d6bede73dfbc987d943d4d034ba8ec1922e0ff7eea705f3206a0dceb5fa7f7c6` |
 | Initialisation | random. **No pretrained or external model.** |
 
-### Test regions (Novo Progresso, Puerto Maldonado; never used for training, selection or calibration)
+### Test regions (Novo Progresso, Puerto Maldonado; never used for training, checkpoint selection or calibration)
 
 | Metric | v1 | **v2** |
 |---|---|---|
@@ -56,6 +56,40 @@ not: the catalogue now returns a same-day two-scene mosaic (`S2B_T19LDG_20210814
 pooled numbers above are lower than the original table, mostly through the water and built-up classes. On this
 rebuild v2 is **not** clearly better than v1 overall; it keeps its gain on the bare/sparse class (F1 0.31 vs 0.26).
 Treat the difference between the two models as within run-to-run and data-version noise.
+
+### Baselines and uncertainty (2026-11-25, same rebuilt test regions)
+
+To show what the U-Net adds, three simple baselines were fitted on the **six training regions only** and scored
+on the same test pixels, labels and ignore mask with the same metric code. 95% intervals come from a paired
+spatial block bootstrap (242 blocks of 128 × 128 px, 1,000 replicates). Reproduce with
+`python -m forestwatch.cli baselines` after building the train and test regions (about 1.5 min on 4 CPU cores).
+
+| Model (pooled test regions) | Mean IoU [95% CI] | Overall agreement | Tree IoU [95% CI] | Tree vs Hansen F1 |
+|---|---|---|---|---|
+| Majority class (tree cover everywhere) | 0.129 [0.120, 0.137] | 64.3% | 0.643 [0.601, 0.684] | n/a |
+| NDVI ≥ 0.44 → tree (threshold fitted on training regions) | n/a (tree vs non-tree only) | n/a | 0.881 [0.862, 0.898] | 0.774 |
+| Per-pixel gradient boosting on the 10 bands (no spatial context) | 0.657 [0.626, 0.680] | 92.4% | 0.927 [0.916, 0.937] | n/a |
+| U-Net v1 | **0.715** [0.690, 0.735] | 94.85% | **0.942** [0.934, 0.950] | 0.807 |
+| U-Net v2 (default) | 0.714 [0.689, 0.734] | 94.24% | 0.934 [0.924, 0.943] | 0.808 |
+
+Paired differences (same resampled blocks):
+
+* U-Net v1 − per-pixel classifier: mIoU +0.045 to +0.072, tree IoU +0.012 to +0.019 (most of the gain is in
+  built-up IoU 0.72 vs 0.55 and other vegetation 0.85 vs 0.79). The spatial context of the U-Net helps, but
+  a per-pixel classifier already gets tree cover largely right.
+* U-Net v2 − v1: mIoU −0.009 to +0.006 (no difference); tree IoU −0.012 to −0.006 (v2 slightly **worse** on
+  the class that change detection uses). On the original data version the same comparison was +0.001
+  (0.940 vs 0.939), so the sign depends on which scene mosaic is used for Puerto Maldonado.
+
+**How to read the intervals.** They describe sampling variability *within these two test regions* only. They
+do not include variability between regions (per-region mIoU differs by up to 0.03), between training seeds
+(one run per configuration) or between data versions (the Puerto Maldonado mosaic changed pooled mIoU by
+0.02–0.03), so the real uncertainty is larger than the intervals show.
+
+**Test-set reuse.** v2 was designed after looking at v1's test-region bare/sparse precision and recall, so the
+test regions are no longer a fully untouched hold-out for the v1 vs v2 comparison. The choice of v2 as the
+default is supported by validation mIoU (0.858 vs 0.849), not only by the test table. Do not pick the default
+model by comparing test-region numbers; retrain with several seeds and compare on validation regions.
 
 ### Change-detection runs with v2 (Novo Progresso, stricter gain rule)
 
@@ -156,7 +190,7 @@ Legal, regulatory or enforcement decisions; attributing cause or responsibility;
 * **Bare / sparse** (F1 0.27) is unreliable: under 1% of training labels; confused with built-up and other vegetation.
 * Trained on dry-season imagery; deciduous dry forest in leaf-off condition is harder (one training region only).
 * Inherits WorldCover's systematic errors (for example regrowth, plantations and agroforestry all as "tree cover").
-* Validation mIoU fluctuated between epochs (0.77–0.85 after epoch 6); the selected checkpoint is the validation maximum, so the validation score is optimistic. The test numbers above are the unbiased ones.
+* Validation mIoU fluctuated between epochs (0.77–0.85 after epoch 6); the selected checkpoint is the validation maximum, so the validation score is optimistic. The test numbers are the less biased ones, but the test regions informed the v2 design (see *Test-set reuse* above), and two regions are a small sample.
 
 ## Training history note
 

@@ -167,3 +167,47 @@ def test_train_rejects_val_test_overlap(tmp_path):
     cfg = TrainConfig(train_regions=["a"], val_regions=["b"], test_regions=["b"])
     with pytest.raises(ValueError, match="validation and test"):
         train(cfg, tmp_path, tmp_path / "out")
+
+
+def test_block_bootstrap_matches_metrics_and_brackets_point_estimate():
+    from forestwatch.ml.baselines import _miou_tree_iou, block_bootstrap, block_confusions
+
+    rng = np.random.default_rng(0)
+    target = rng.integers(0, 5, size=(300, 260)).astype(np.uint8)
+    target[:20] = IGNORE
+    noisy = np.where(rng.random(target.shape) < 0.2, rng.integers(0, 5, size=target.shape), target).astype(np.uint8)
+    blocks = block_confusions(noisy, target, block=64)
+    # blocks partition the labelled pixels: their sum is the full confusion matrix
+    full = confusion(noisy, target, 5)
+    np.testing.assert_array_equal(blocks.sum(axis=0), full)
+    miou, tree = _miou_tree_iou(full[None])
+    ref = metrics_from_confusion(full)
+    assert miou[0] == pytest.approx(ref["mean_iou"])
+    assert tree[0] == pytest.approx(ref["per_class"][0]["iou"])
+
+    res = block_bootstrap({"a": blocks, "b": blocks}, n_boot=200, seed=1)
+    lo, hi = res["models"]["a"]["mean_iou_ci"]
+    assert lo <= ref["mean_iou"] <= hi and hi - lo < 0.1
+    # identical models: the paired difference is exactly zero in every replicate
+    assert res["differences"]["b - a"]["mean_iou_ci"] == [0.0, 0.0]
+
+
+def test_block_bootstrap_rejects_mismatched_blocks():
+    from forestwatch.ml.baselines import block_bootstrap
+
+    with pytest.raises(ValueError):
+        block_bootstrap({"a": np.ones((3, 5, 5)), "b": np.ones((4, 5, 5))})
+
+
+def test_ndvi_threshold_fitted_on_given_regions():
+    from forestwatch.ml.baselines import fit_ndvi_threshold
+    from forestwatch.ml.dataset import RegionData
+
+    bands = ["B2", "B3", "B4", "B5", "B6", "B7", "B8", "B8A", "B11", "B12"]
+    refl = np.full((10, 40, 40), 0.1, np.float32)
+    labels = np.ones((40, 40), np.uint8)
+    refl[6, :20] = 0.5  # NDVI (0.5-0.1)/(0.5+0.1) = 0.67 for tree pixels
+    refl[6, 20:] = 0.2  # NDVI 0.33 for non-tree pixels
+    labels[:20] = 0
+    th = fit_ndvi_threshold([RegionData("r", refl, labels, {})], bands)
+    assert 0.33 < th <= 0.67

@@ -9,6 +9,7 @@
 * **Cause and legality.** Imagery cannot establish why tree cover was lost, who removed it or whether it was legal. Fire-like spectral change is an annotation, not an attribution.
 * **Area estimates are mapped areas**, with boundary uncertainty only. They are biased by omission and commission errors that are not quantified without a reference sample.
 * **Domain.** Trained on tropical moist and dry forest regions in South America plus one Indonesian region, in the dry season. Performance elsewhere (temperate or boreal forest, African forests, wet-season imagery, snow) is unknown and likely poorer.
+* **Small, reused test set.** Segmentation is tested on two 13 km regions. The v2 changes were designed after looking at v1's test results, and the change-detection gain rule was tightened after inspecting runs over Novo Progresso, which is both a test region and the default AOI. The reported change-run statistics for that AOI are therefore not an independent check of the rules. Block-bootstrap intervals (`python -m forestwatch.cli baselines`) cover only sampling within the two regions, not seed or region-to-region variability.
 * **Bare/sparse class.** It is rare in the training regions (< 1% of labelled pixels), so its predictions are unreliable.
 * **Phenology.** Deciduous dry forest loses leaves in the dry season and can look non-forest. Same-season comparisons reduce, but do not remove, this risk.
 

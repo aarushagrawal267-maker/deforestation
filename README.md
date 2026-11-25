@@ -122,6 +122,7 @@ python -m forestwatch.cli doctor                  # environment check
 python -m forestwatch.cli build-regions           # training data
 python -m forestwatch.cli train --config ../configs/training/quick.yaml
 python -m forestwatch.cli evaluate ../data/models/<name>/best.pt
+python -m forestwatch.cli baselines               # baselines + block-bootstrap intervals on the test regions
 python -m forestwatch.cli sample-data             # two observations of the default AOI
 ```
 
@@ -135,7 +136,7 @@ cd frontend && npx playwright test               # end-to-end (app must be runni
 
 The first time, install Playwright's browser with `npx playwright install chromium` (or point `PW_CHROMIUM_PATH` at an existing Chromium). `SYLVA_URL=http://localhost:4173 npx playwright test` runs the same checks against a production build served by `npx vite preview --port 4173`.
 
-Last verified run (2026-11-25, Linux, CPU only): backend 60 passed, 3 skipped (live-provider tests, enabled with `SYLVA_RUN_NETWORK=1`); frontend 8 passed; Playwright 14 passed against both the dev server and the production build; `npm audit` reports 0 vulnerabilities.
+Last verified run (2026-11-25, Linux, CPU only): backend 63 passed, 3 skipped (live-provider tests, enabled with `SYLVA_RUN_NETWORK=1`); frontend 8 passed; Playwright 14 passed against both the dev server and the production build; `npm audit` reports 0 vulnerabilities.
 
 ## Deploying online (optional)
 
@@ -173,7 +174,8 @@ See `docs/` (also rendered in the app under *Research & Docs*): [overview](docs/
 ## Limitations
 
 * Detected regions are **potential** forest-cover changes, not verified deforestation; the cause of a change cannot be determined from imagery alone.
-* Training labels are weak labels derived from ESA WorldCover, so metrics measure agreement with a reference map, not with field ground truth. The bare/sparse class is weak (F1 0.32 with v2).
+* Training labels are weak labels derived from ESA WorldCover, so metrics measure agreement with a reference map, not with field ground truth. The bare/sparse class is weak (F1 0.31–0.32 with v2).
+* The test set is two regions. On the rebuilt test regions the U-Net reaches mIoU 0.715 [95% block-bootstrap CI 0.690–0.735] against 0.657 for a per-pixel classifier and 0.129 for "tree cover everywhere"; v1 and v2 are not distinguishable (see the [model card](docs/model-card.md#baselines-and-uncertainty-2026-11-25-same-rebuilt-test-regions)). The intervals ignore seed and between-region variability, so they understate the real uncertainty.
 * Areas are mapped areas with boundary uncertainty; sample-based (Olofsson) area estimation is not implemented.
 * Sylva analyses archived acquisitions; it is not a real-time alerting system. Cloudy seasons reduce the usable observations.
 * The CDSE authenticated download, Dynamic World labels and the CUDA/GPU path are implemented but not verified (they need accounts or a GPU).

@@ -66,6 +66,34 @@ def evaluate(checkpoint: Path, out: Path | None = None):
 
 
 @app.command()
+def baselines(
+    checkpoint: list[Path] = typer.Option(None, help="Checkpoints to compare (default: the shipped models/ folders)"),
+    out: Path | None = typer.Option(None, help="JSON output (default: data/eval/baselines.json)"),
+    n_boot: int = 1000,
+    seed: int = 0,
+):
+    """Score simple baselines and the U-Nets on the test regions, with spatial block-bootstrap intervals."""
+    from .ml.baselines import run_baselines
+    from .regions import region_split
+
+    s = get_settings()
+    split = region_split(s.path("regions"))
+    ckpts = checkpoint or sorted((REPO_ROOT / "models").glob("*/best.pt"))
+    res = run_baselines(
+        s.path("regions"), split["train"], split["test"], list(ckpts), n_boot=n_boot, seed=seed, progress=typer.echo
+    )
+    dest = out or s.path("eval") / "baselines.json"
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_text(json.dumps(res, indent=2))
+    for name, m in res["five_class"].items():
+        ci = res["bootstrap_five_class"]["models"][name]["mean_iou_ci"]
+        typer.echo(f"{name:24s} mIoU {m['mean_iou']:.3f} [{ci[0]:.3f}, {ci[1]:.3f}]  OA {m['overall_accuracy']:.4f}")
+    for name, m in res["tree_vs_non_tree"].items():
+        typer.echo(f"{name:24s} tree IoU {m['tree_iou']:.3f}  tree vs Hansen F1 {m['hansen_tree_f1']:.3f}")
+    typer.echo(f"written to {dest}")
+
+
+@app.command()
 def doctor():
     """Check that the geospatial and ML stack works (used by setup.ps1)."""
     import tempfile

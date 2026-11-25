@@ -56,7 +56,7 @@ export default function EvaluationPage() {
       <PageHeader
         eyebrow="Model evaluation"
         title="Held-out geographic evaluation"
-        description="Metrics are computed on test regions that were never used for training or threshold tuning. They measure agreement with the WorldCover-derived reference labels (themselves model outputs) and with Hansen GFC tree cover. Neither is accuracy against independent ground truth."
+        description="Metrics are computed on test regions that were never used for training, checkpoint selection or calibration. They measure agreement with the WorldCover-derived reference labels (themselves model outputs) and with Hansen GFC tree cover. Neither is accuracy against independent ground truth."
         actions={
           <>
             <Select className="w-64" value={eid} onChange={(e) => setExpId(e.target.value)}>

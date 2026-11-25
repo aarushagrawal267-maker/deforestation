@@ -54,6 +54,17 @@ python -m forestwatch.cli evaluate ../data/models/<experiment>/best.pt
 
 Results are stored in `data/evaluations/<id>/evaluation.json`, alongside the prediction rasters per test region.
 
+To put the numbers in context (needs the train and test regions built):
+
+```bash
+python -m forestwatch.cli baselines   # writes data/eval/baselines.json
+```
+
+This fits a majority-class, an NDVI-threshold and a per-pixel gradient-boosting baseline on the training regions
+only, scores them and the shipped U-Nets on the test regions, and adds 95% spatial block-bootstrap intervals
+(128 px blocks, paired across models). The intervals cover sampling within the two test regions only, not seed,
+region or data-version variability.
+
 ## 5. Change detection
 
 1. Image Explorer: search the AOI and ingest an earlier and a later same-season acquisition (or run `python -m forestwatch.cli sample-data`, which ingests the clearest July 2024 and July 2025 scenes for the default AOI).
