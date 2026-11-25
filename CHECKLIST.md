@@ -61,7 +61,7 @@ Status key: ✅ done and verified · ⚠️ done with a stated limitation · ❌
 | Geospatial results exported | ✅ | GeoJSON / GPKG / CSV / GeoTIFF / bundle with provenance; API test downloads zips |
 | Evaluation metrics from actual results | ✅ | `data/evaluations/<id>/evaluation.json` |
 | Experiment history saved | ✅ | history page and tables |
-| Important features pass automated tests | ✅ | backend pytest 63 passed, 3 skipped (re-run 2026-11-25, Linux CPU, after the checkpoint-robustness, split-hygiene and baseline/bootstrap additions) (+3 live-provider tests passed with `SYLVA_RUN_NETWORK=1`); frontend vitest 8 passed; Playwright e2e 14 passed against both the dev server and the production build (`vite preview`) and the single-origin hosted mode (`SYLVA_FRONTEND_DIST`, where Swagger now lives at `/api/swagger` so it no longer hides the docs list) |
+| Important features pass automated tests | ✅ | backend pytest 64 passed, 3 skipped (re-run 2026-11-25, Linux CPU, after the checkpoint-robustness, split-hygiene and baseline/bootstrap additions) (+3 live-provider tests passed with `SYLVA_RUN_NETWORK=1`); frontend vitest 8 passed; Playwright e2e 14 passed against both the dev server and the production build (`vite preview`) and the single-origin hosted mode (`SYLVA_FRONTEND_DIST`, where Swagger now lives at `/api/swagger` so it no longer hides the docs list) |
 | Documentation explains reproduction | ✅ | `docs/reproducibility.md` |
 
 ## Known gaps / not done

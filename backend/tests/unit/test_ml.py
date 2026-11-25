@@ -211,3 +211,43 @@ def test_ndvi_threshold_fitted_on_given_regions():
     labels[:20] = 0
     th = fit_ndvi_threshold([RegionData("r", refl, labels, {})], bands)
     assert 0.33 < th <= 0.67
+
+
+def _tiny_ckpt(path, bands, test_regions=("t",)):
+    m = UNet(len(bands), 5, 8, 2)
+    path.parent.mkdir(parents=True)
+    torch.save(
+        {
+            "state_dict": m.state_dict(),
+            "model_config": m.config,
+            "bands": list(bands),
+            "norm_stats": {"mean": [0.1] * len(bands), "std": [0.05] * len(bands)},
+            "train_config": {"train_regions": ["a"], "val_regions": ["v"], "test_regions": list(test_regions)},
+        },
+        path,
+    )
+    return path
+
+
+def test_baselines_feed_each_checkpoint_its_own_bands(tmp_path, monkeypatch):
+    """A model trained on a band subset is compared with a 10-band model without mixing up their inputs."""
+    import forestwatch.ml.baselines as bl
+    from forestwatch.ml.dataset import RegionData
+    from forestwatch.preprocessing.bands import BAND_NAMES
+
+    rng = np.random.default_rng(0)
+
+    def fake_region(region_dir, bands):
+        refl = rng.random((len(bands), 140, 140)).astype(np.float32) * 0.3
+        labels = rng.integers(0, 5, size=(140, 140)).astype(np.uint8)
+        return RegionData(region_dir.name, refl, labels, {"label_year": 2021})
+
+    monkeypatch.setattr(bl, "load_region", fake_region)
+    monkeypatch.setattr(bl, "hansen_tree_agreement", lambda *a: {"tp": 1.0, "fp": 0.0, "fn": 0.0, "tn": 1.0})
+    subset = _tiny_ckpt(tmp_path / "subset" / "best.pt", ["B4", "B8"])  # first, so its bands used to leak into the rest
+    full = _tiny_ckpt(tmp_path / "full" / "best.pt", BAND_NAMES)
+    res = bl.run_baselines(tmp_path, ["a"], ["t"], [subset, full], n_boot=20)
+    assert set(res["five_class"]) == {"subset", "full", "pixel_gbdt", "majority_class"}
+
+    with pytest.raises(ValueError, match="folders named"):
+        bl.run_baselines(tmp_path, ["a"], ["t"], [full, full], n_boot=20)

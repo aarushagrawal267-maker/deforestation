@@ -24,6 +24,7 @@ from pathlib import Path
 import numpy as np
 
 from ..labels.classes import CLASS_NAMES, IGNORE, NUM_CLASSES, TREE
+from ..preprocessing.bands import BAND_NAMES
 from .dataset import class_weights, load_region
 from .evaluate import hansen_tree_agreement, pooled_binary_metrics
 from .infer import load_checkpoint, predict_probs
@@ -176,8 +177,14 @@ def run_baselines(
         seen = set(test_regions) & (set(tc.get("train_regions", [])) | set(tc.get("val_regions", [])))
         if seen:
             raise ValueError(f"{c}: regions {sorted(seen)} were used to train or select this model")
+        if c.parent.name in models:
+            raise ValueError(f"Two checkpoints come from folders named {c.parent.name!r}; results would overwrite each other")
+        other = [b for b in ckpt["bands"] if b not in BAND_NAMES]
+        if other:
+            raise ValueError(f"{c}: bands {other} are not among the standard bands {BAND_NAMES}")
         models[c.parent.name] = (model, ckpt)
-    bands = next(iter(models.values()))[1]["bands"] if models else ["B2", "B3", "B4", "B5", "B6", "B7", "B8", "B8A", "B11", "B12"]
+    # Baselines always use the standard 10 bands; each U-Net gets its own band subset/order from its checkpoint.
+    bands = list(BAND_NAMES)
 
     say("loading training regions")
     train = [load_region(regions_dir / n, bands) for n in train_regions]
@@ -206,7 +213,8 @@ def run_baselines(
         year = int(r.meta.get("label_year", 2021))
         preds = {}
         for mname, (model, ckpt) in models.items():
-            probs = predict_probs(model, r.refl, ckpt["norm_stats"], ckpt.get("temperature", 1.0))
+            refl_m = r.refl[[bands.index(b) for b in ckpt["bands"]]]
+            probs = predict_probs(model, refl_m, ckpt["norm_stats"], ckpt.get("temperature", 1.0))
             preds[mname] = np.where(valid, np.nan_to_num(probs).argmax(axis=0), IGNORE).astype(np.uint8)
         preds["pixel_gbdt"] = _predict_pixels(clf, r.refl, valid)
         preds["majority_class"] = np.where(valid, majority, IGNORE).astype(np.uint8)
