@@ -63,6 +63,9 @@ def create_experiment(body: ExperimentIn, db: Session = Depends(get_db)):
     leak = set(cfg["train_regions"]) & (set(cfg["val_regions"]) | set(cfg["test_regions"]))
     if leak:
         raise HTTPException(422, f"Regions cannot be in both training and validation/test: {sorted(leak)}")
+    leak = set(cfg["val_regions"]) & set(cfg["test_regions"])
+    if leak:
+        raise HTTPException(422, f"Regions cannot be in both validation and test: {sorted(leak)}")
     if not cfg["train_regions"] or not cfg["val_regions"]:
         raise HTTPException(422, "Build training regions first (Dataset Explorer) - none are available")
     TrainConfig.from_dict(cfg)
@@ -154,6 +157,11 @@ def create_evaluation(body: EvaluationIn, db: Session = Depends(get_db)):
     leak = set(regions) & set(exp.config.get("train_regions", []))
     if leak:
         raise HTTPException(422, f"Cannot evaluate on training regions: {sorted(leak)}")
+    leak = set(regions) & set(exp.config.get("val_regions", []))
+    if leak:
+        raise HTTPException(
+            422, f"Cannot evaluate on validation regions (used for model selection and calibration): {sorted(leak)}"
+        )
     ev = Evaluation(experiment_id=exp.id, regions=regions)
     db.add(ev)
     db.commit()

@@ -33,6 +33,12 @@ def _model_id(db, experiment_id: str | None) -> str:
     exp = get_or_404(db, Experiment, eid)
     if not exp.checkpoint:
         raise HTTPException(409, "Selected experiment has no trained checkpoint")
+    if not Path(exp.checkpoint).is_file():
+        raise HTTPException(
+            409,
+            f"The checkpoint file of model '{exp.name}' is missing ({exp.checkpoint}). "
+            "Restart the app to reinstall the bundled models, or activate another model in the Model Laboratory.",
+        )
     return eid
 
 

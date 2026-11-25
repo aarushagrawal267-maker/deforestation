@@ -12,12 +12,33 @@ from .dataset import normalize
 from .device import get_device
 from .unet import UNet
 
+REQUIRED_CKPT_KEYS = ("state_dict", "model_config", "bands", "norm_stats")
+
+
+class CheckpointError(ValueError):
+    """The model checkpoint is missing, unreadable or not a Sylva U-Net checkpoint."""
+
 
 def load_checkpoint(path: Path, device: torch.device | None = None) -> tuple[UNet, dict]:
+    path = Path(path)
+    if not path.is_file():
+        raise CheckpointError(
+            f"Model checkpoint not found: {path}. Restart the app to reinstall the bundled models, "
+            "or train/activate another model in the Model Laboratory."
+        )
     device = device or get_device()
-    ckpt = torch.load(path, map_location=device, weights_only=False)
+    try:
+        ckpt = torch.load(path, map_location=device, weights_only=False)
+    except Exception as e:
+        raise CheckpointError(f"Model checkpoint {path} could not be read (corrupt or incomplete file): {e}") from e
+    missing = [k for k in REQUIRED_CKPT_KEYS if not isinstance(ckpt, dict) or k not in ckpt]
+    if missing:
+        raise CheckpointError(f"{path} is not a Sylva U-Net checkpoint (missing {', '.join(missing)})")
     model = UNet(**ckpt["model_config"]).to(device)
-    model.load_state_dict(ckpt["state_dict"])
+    try:
+        model.load_state_dict(ckpt["state_dict"])
+    except RuntimeError as e:
+        raise CheckpointError(f"Weights in {path} do not match its model_config: {e}") from e
     model.eval()
     return model, ckpt
 

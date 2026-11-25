@@ -9,7 +9,7 @@ Windows: `powershell -ExecutionPolicy Bypass -File .\setup.ps1`. On Linux or mac
 ```bash
 cd backend
 python3.12 -m venv .venv && source .venv/bin/activate
-pip install torch --index-url https://download.pytorch.org/whl/cpu
+pip install torch==2.15.0 --index-url https://download.pytorch.org/whl/cpu
 pip install -r requirements-dev.txt
 cd ../frontend && npm ci
 ```

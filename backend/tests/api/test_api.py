@@ -31,6 +31,20 @@ def _register_fixture_products(tmp_data_dir, fixture_products, aoi_id):
     return ids
 
 
+def _save_tiny_checkpoint(path, name, **extra_cfg):
+    m = UNet(10, 5, 8, 2)
+    torch.save(
+        {
+            "state_dict": m.state_dict(),
+            "model_config": m.config,
+            "bands": list(BAND_NAMES),
+            "norm_stats": {"mean": [0.05] * 10, "std": [0.05] * 10},
+            "train_config": {"name": name, "bands": list(BAND_NAMES), **extra_cfg},
+        },
+        path,
+    )
+
+
 def _register_model(tmp_data_dir):
     from app.db.init import set_setting
     from app.db.models import Experiment
@@ -204,8 +218,7 @@ def test_bundled_model_installed_on_fresh_start(tmp_data_dir, monkeypatch):
 
     src = tmp_data_dir / "bundle" / "tiny-v1"
     src.mkdir(parents=True)
-    torch.save({"state_dict": UNet(10, 5, 8, 2).state_dict(), "train_config": {"name": "tiny-v1", "bands": list(BAND_NAMES)}},
-               src / "best.pt")
+    _save_tiny_checkpoint(src / "best.pt", "tiny-v1")
     (src / "result.json").write_text(json.dumps({"status": "completed", "best_val_miou": 0.5, "history": []}))
     monkeypatch.setattr(registry, "BUNDLED_MODELS", tmp_data_dir / "bundle")
     with _client() as c:
@@ -221,8 +234,7 @@ def test_bundled_model_not_duplicated(tmp_data_dir, monkeypatch):
 
     src = tmp_data_dir / "bundle" / "tiny-v1"
     src.mkdir(parents=True)
-    torch.save({"state_dict": UNet(10, 5, 8, 2).state_dict(), "train_config": {"name": "tiny-v1", "bands": list(BAND_NAMES)}},
-               src / "best.pt")
+    _save_tiny_checkpoint(src / "best.pt", "tiny-v1")
     (src / "result.json").write_text(json.dumps({"status": "completed", "history": []}))
     local = tmp_data_dir / "models" / "exp_local"
     local.mkdir(parents=True)
@@ -241,3 +253,72 @@ def test_bundled_model_not_duplicated(tmp_data_dir, monkeypatch):
     monkeypatch.setattr(registry, "BUNDLED_MODELS", tmp_data_dir / "bundle")
     with _client() as c:
         assert [e["name"] for e in c.get("/api/experiments").json()] == ["local"]
+
+
+def test_corrupt_model_folder_does_not_block_startup(tmp_data_dir, monkeypatch):
+    """A truncated/corrupt checkpoint is skipped with a warning; the app and the good model still load."""
+    import app.services.registry as registry
+
+    bundle = tmp_data_dir / "bundle"
+    (bundle / "tiny-v1").mkdir(parents=True)
+    _save_tiny_checkpoint(bundle / "tiny-v1" / "best.pt", "tiny-v1")
+    (bundle / "tiny-v1" / "result.json").write_text(json.dumps({"status": "completed", "history": []}))
+    broken = tmp_data_dir / "models" / "broken"
+    broken.mkdir(parents=True)
+    (broken / "best.pt").write_bytes(b"not a checkpoint")
+    (broken / "result.json").write_text(json.dumps({"status": "completed", "history": []}))
+    monkeypatch.setattr(registry, "BUNDLED_MODELS", bundle)
+    with _client() as c:
+        assert c.get("/api/health").status_code == 200
+        assert [e["name"] for e in c.get("/api/experiments").json()] == ["tiny-v1"]
+
+
+def test_missing_checkpoint_gives_clear_error(tmp_data_dir, fixture_products):
+    with _client() as c:
+        _register_model(tmp_data_dir)
+        (tmp_data_dir / "models" / "tiny" / "best.pt").unlink()
+        aoi = c.get("/api/aois").json()[0]["id"]
+        ids = _register_fixture_products(tmp_data_dir, fixture_products, aoi)
+        r = c.post("/api/segmentations", json={"product_id": ids[0]})
+        assert r.status_code == 409 and "missing" in r.json()["detail"]
+
+
+def test_moved_project_folder_repairs_checkpoint_paths(tmp_data_dir, monkeypatch):
+    """Checkpoint paths are absolute; after the project folder moves they are re-pointed on start."""
+    import app.services.registry as registry
+    from app.db.models import Experiment
+    from app.db.session import SessionLocal
+    from forestwatch.ml.infer import file_sha256
+
+    d = tmp_data_dir / "models" / "tiny-v1"
+    d.mkdir(parents=True)
+    _save_tiny_checkpoint(d / "best.pt", "tiny-v1")
+    monkeypatch.setattr(registry, "BUNDLED_MODELS", tmp_data_dir / "no-bundle")
+    with _client():
+        pass
+    with SessionLocal() as db:
+        db.add(Experiment(name="tiny-v1", config={}, status="completed", checkpoint="/old/place/data/models/tiny-v1/best.pt",
+                          checkpoint_sha256=file_sha256(d / "best.pt")))
+        db.commit()
+    with _client():
+        pass
+    with SessionLocal() as db:
+        assert db.query(Experiment).one().checkpoint == str(d / "best.pt")
+
+
+def test_evaluation_rejects_validation_regions(tmp_data_dir):
+    from app.db.models import Experiment
+    from app.db.session import SessionLocal
+
+    with _client() as c:
+        with SessionLocal() as db:
+            e = Experiment(name="m", status="completed", checkpoint="x.pt",
+                           config={"train_regions": ["a"], "val_regions": ["b"], "test_regions": ["c"]})
+            db.add(e)
+            db.commit()
+            eid = e.id
+        r = c.post("/api/evaluations", json={"experiment_id": eid, "regions": ["b"]})
+        assert r.status_code == 422 and "validation" in r.json()["detail"]
+        r = c.post("/api/experiments", json={"name": "vt", "train_regions": ["a"], "val_regions": ["b"],
+                                             "test_regions": ["b"], "start": False})
+        assert r.status_code == 422 and "validation and test" in r.json()["detail"]

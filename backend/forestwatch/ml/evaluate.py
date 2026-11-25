@@ -37,6 +37,14 @@ def _block_mode(a: np.ndarray, f: int = 3) -> np.ndarray:
 
 def evaluate_checkpoint(ckpt_path: Path, regions_dir: Path, region_names: list[str], out_dir: Path, progress=None) -> dict:
     model, ckpt = load_checkpoint(ckpt_path)
+    tc = ckpt.get("train_config") or {}
+    seen = set(region_names) & (set(tc.get("train_regions", [])) | set(tc.get("val_regions", [])))
+    if seen:
+        raise ValueError(
+            f"Regions {sorted(seen)} were used to train or select this model; evaluate on held-out test regions only"
+        )
+    if not region_names:
+        raise ValueError("No evaluation regions given")
     out_dir.mkdir(parents=True, exist_ok=True)
     total_cm = np.zeros((NUM_CLASSES, NUM_CLASSES), np.int64)
     per_region = []

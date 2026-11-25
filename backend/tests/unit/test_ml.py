@@ -145,3 +145,25 @@ def test_temperature_scaling_reduces_overconfidence():
     loader = [(x, y)]
     res = fit_temperature(Overconfident(), loader, torch.device("cpu"))
     assert res["temperature"] > 2 and res["ece_after"] < res["ece_before"]
+
+
+def test_load_checkpoint_clear_errors(tmp_path):
+    from forestwatch.ml.infer import CheckpointError, load_checkpoint
+
+    with pytest.raises(CheckpointError, match="not found"):
+        load_checkpoint(tmp_path / "missing.pt")
+    bad = tmp_path / "bad.pt"
+    bad.write_bytes(b"truncated")
+    with pytest.raises(CheckpointError, match="could not be read"):
+        load_checkpoint(bad)
+    torch.save({"state_dict": {}}, tmp_path / "partial.pt")
+    with pytest.raises(CheckpointError, match="missing model_config"):
+        load_checkpoint(tmp_path / "partial.pt")
+
+
+def test_train_rejects_val_test_overlap(tmp_path):
+    from forestwatch.ml.train import TrainConfig, train
+
+    cfg = TrainConfig(train_regions=["a"], val_regions=["b"], test_regions=["b"])
+    with pytest.raises(ValueError, match="validation and test"):
+        train(cfg, tmp_path, tmp_path / "out")

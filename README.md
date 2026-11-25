@@ -94,7 +94,7 @@ The U-Nets trained for this project ship in `models/` (`unet-base32-v2` is the d
 
 ```bash
 cd backend && python3.12 -m venv .venv && source .venv/bin/activate
-pip install torch --index-url https://download.pytorch.org/whl/cpu && pip install -r requirements-dev.txt
+pip install torch==2.15.0 --index-url https://download.pytorch.org/whl/cpu && pip install -r requirements-dev.txt
 cd ../frontend && npm ci && cd .. && cp .env.example .env
 ./scripts/dev.sh        # starts API, worker and frontend in the background
 ./scripts/stop.sh       # stops them again
@@ -135,7 +135,7 @@ cd frontend && npx playwright test               # end-to-end (app must be runni
 
 The first time, install Playwright's browser with `npx playwright install chromium` (or point `PW_CHROMIUM_PATH` at an existing Chromium). `SYLVA_URL=http://localhost:4173 npx playwright test` runs the same checks against a production build served by `npx vite preview --port 4173`.
 
-Last verified run (2026-11-24, Linux, CPU only): backend 54 passed, 3 skipped (live-provider tests, enabled with `SYLVA_RUN_NETWORK=1`); frontend 8 passed; Playwright 14 passed against both the dev server and the production build; `npm audit` reports 0 vulnerabilities.
+Last verified run (2026-11-25, Linux, CPU only): backend 60 passed, 3 skipped (live-provider tests, enabled with `SYLVA_RUN_NETWORK=1`); frontend 8 passed; Playwright 14 passed against both the dev server and the production build; `npm audit` reports 0 vulnerabilities.
 
 ## Deploying online (optional)
 

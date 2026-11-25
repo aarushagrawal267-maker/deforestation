@@ -106,6 +106,11 @@ def train(cfg: TrainConfig, regions_dir: Path, out_dir: Path, cb: Callbacks | No
     overlap = set(cfg.train_regions) & (set(cfg.val_regions) | set(cfg.test_regions))
     if overlap:
         raise ValueError(f"Regions in both train and val/test (spatial leakage): {sorted(overlap)}")
+    # validation drives early stopping, checkpoint selection and temperature fitting, so a test
+    # region that is also a validation region would give optimistic held-out numbers
+    overlap = set(cfg.val_regions) & set(cfg.test_regions)
+    if overlap:
+        raise ValueError(f"Regions in both validation and test (test would not be held out): {sorted(overlap)}")
     if not cfg.train_regions or not cfg.val_regions:
         raise ValueError("At least one training and one validation region are required")
 

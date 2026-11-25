@@ -7,6 +7,7 @@ from the run's ``result.json`` and the checkpoint written by the training loop.
 from __future__ import annotations
 
 import json
+import logging
 import shutil
 from datetime import datetime
 from pathlib import Path
@@ -14,7 +15,7 @@ from pathlib import Path
 import torch
 from sqlalchemy import select
 
-from forestwatch.ml.infer import file_sha256
+from forestwatch.ml.infer import file_sha256, load_checkpoint
 from forestwatch.settings import REPO_ROOT, get_settings
 
 from ..db.init import get_setting, set_setting
@@ -33,8 +34,8 @@ def import_model_dir(d: Path) -> str | None:
         if db.scalars(select(Experiment).where(Experiment.checkpoint_sha256 == sha)).first():
             return None  # same weights already registered (e.g. the bundled copy of a locally trained model)
         res = json.loads(res_path.read_text())
-        ckpt = torch.load(ckpt_path, map_location="cpu", weights_only=False)
-        cfg = ckpt["train_config"]
+        _, ckpt = load_checkpoint(ckpt_path, torch.device("cpu"))  # validates the file before registering it
+        cfg = ckpt.get("train_config", {})
         exp = Experiment(
             name=cfg.get("name", d.name),
             config=cfg,
@@ -60,6 +61,7 @@ def import_model_dir(d: Path) -> str | None:
 
 
 BUNDLED_MODELS = REPO_ROOT / "models"
+log = logging.getLogger("sylva.registry")
 
 
 def install_bundled_models(root: Path) -> None:
@@ -81,16 +83,39 @@ def import_cli_models() -> list[str]:
     install_bundled_models(root)
     if not root.exists():
         return []
+    _repair_moved_checkpoints(root)
     with SessionLocal() as db:
         known_dirs = {Path(e.checkpoint).parent.name for e in db.scalars(select(Experiment)).all() if e.checkpoint}
     out = []
     for d in sorted(root.iterdir()):
         if d.is_dir() and not d.name.startswith("exp_") and d.name not in known_dirs and (d / "result.json").exists():
-            eid = import_model_dir(d)
+            try:
+                eid = import_model_dir(d)
+            except Exception as e:  # one broken model folder must not stop the app from starting
+                log.warning("Skipping model folder %s: it could not be imported (%s)", d, e)
+                continue
             if eid:
                 out.append(eid)
     _ensure_active_model(root, out)
     return out
+
+
+def _repair_moved_checkpoints(root: Path) -> None:
+    """Checkpoint paths are stored as absolute paths. When the project folder is moved or renamed,
+    point them at the same model folder under the current data directory (same weights only)."""
+    with SessionLocal() as db:
+        changed = False
+        for exp in db.scalars(select(Experiment).where(Experiment.checkpoint.is_not(None))).all():
+            old = Path(exp.checkpoint)
+            if old.is_file():
+                continue
+            new = root / old.parent.name / old.name
+            if new.is_file() and (not exp.checkpoint_sha256 or file_sha256(new) == exp.checkpoint_sha256):
+                log.info("Model %s moved: %s -> %s", exp.name, old, new)
+                exp.checkpoint = str(new)
+                changed = True
+        if changed:
+            db.commit()
 
 
 def _ensure_active_model(root: Path, imported: list[str]) -> None:
