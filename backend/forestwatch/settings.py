@@ -9,6 +9,7 @@ from __future__ import annotations
 from functools import lru_cache
 from pathlib import Path
 
+from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -29,9 +30,11 @@ class Settings(BaseSettings):
     stac_url: str = "https://earth-search.aws.element84.com/v1"
     stac_collection: str = "sentinel-2-c1-l2a"
 
-    # Optional Copernicus Data Space Ecosystem credentials (never sent to the frontend)
+    # Optional Copernicus Data Space Ecosystem credentials (never sent to the frontend).
+    # SecretStr keeps the password out of repr(), logs and tracebacks; read it with
+    # .get_secret_value() only where it is sent to the CDSE token endpoint.
     cdse_username: str | None = None
-    cdse_password: str | None = None
+    cdse_password: SecretStr | None = None
 
     # Safety limits
     max_aoi_km2: float = 2500.0

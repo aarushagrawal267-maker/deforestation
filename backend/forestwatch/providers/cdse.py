@@ -43,7 +43,7 @@ class CDSEProvider(EarthSearchProvider):
                 "grant_type": "password",
                 "client_id": "cdse-public",
                 "username": s.cdse_username,
-                "password": s.cdse_password,
+                "password": s.cdse_password.get_secret_value(),
             },
             timeout=30,
         )

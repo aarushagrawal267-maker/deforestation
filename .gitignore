@@ -2,18 +2,31 @@
 data/
 logs/
 .run/
+*.sqlite
+*.sqlite3
+*.db
+*.dump
+
+# Secrets and local credentials (.env.example is the committed template)
 .env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
 
 # Python
 __pycache__/
 *.py[cod]
 .venv/
+venv/
 .pytest_cache/
 .ruff_cache/
 *.egg-info/
 
 # Node
-frontend/node_modules/
+node_modules/
 frontend/dist/
 frontend/test-results/
 frontend/playwright-report/
