@@ -21,16 +21,16 @@ import { fmtNum } from "../../lib/format";
 
 const NAV = [
   { to: "/", label: "Overview", icon: LayoutDashboard },
-  { to: "/map", label: "Forest Map", icon: MapIcon },
-  { to: "/explorer", label: "Image Explorer", icon: Satellite },
+  { to: "/map", label: "Forest map", icon: MapIcon },
+  { to: "/explorer", label: "Image explorer", icon: Satellite },
   { to: "/segmentation", label: "Segmentation", icon: Trees },
-  { to: "/change", label: "Change Detection", icon: GitCompareArrows },
+  { to: "/change", label: "Change detection", icon: GitCompareArrows },
   { to: "/investigate", label: "Investigation", icon: ScanSearch },
   { to: "/datasets", label: "Datasets", icon: Database },
-  { to: "/lab", label: "Model Lab", icon: FlaskConical },
+  { to: "/lab", label: "Model lab", icon: FlaskConical },
   { to: "/evaluation", label: "Evaluation", icon: Target },
   { to: "/history", label: "History", icon: History },
-  { to: "/docs", label: "Research & Docs", icon: BookOpen },
+  { to: "/docs", label: "Research and docs", icon: BookOpen },
 ];
 
 function Logo() {
@@ -43,8 +43,8 @@ function Logo() {
         <path d="M16 18l3-2.4M16 21.5l-3-2.4" stroke="#121413" strokeWidth="1.4" strokeLinecap="round" />
       </svg>
       <div className="hidden xl:block">
-        <div className="font-display text-[1.15rem] leading-none font-medium tracking-tight">Sylva</div>
-        <div className="mt-0.5 text-[10px] uppercase tracking-[0.16em] text-muted">Forest change intelligence</div>
+        <div className="font-display text-[18px] leading-none font-medium">Sylva</div>
+        <div className="mt-0.5 text-[11px] text-muted">Forest change intelligence</div>
       </div>
     </div>
   );
@@ -69,7 +69,7 @@ function MissionHeader() {
   return (
     <div className="flex h-12 items-center gap-2 border-b border-line bg-canvas/95 px-4 backdrop-blur">
       <div className="flex min-w-0 items-center gap-2 rounded-lg border border-line bg-surface pl-2.5 pr-1">
-        <span className="text-[10px] uppercase tracking-[0.14em] text-muted">AOI</span>
+        <span className="text-[11px] text-muted">AOI</span>
         <select
           aria-label="Monitoring area"
           className="h-8 max-w-[18rem] truncate bg-transparent text-[13px] text-ink outline-none"
@@ -144,7 +144,7 @@ export function Shell({ children }: { children: ReactNode }) {
             </li>
           ))}
         </ul>
-        <div className="hidden px-4 pb-4 text-[10px] leading-relaxed text-faint xl:block">
+        <div className="hidden px-4 pb-4 text-[11px] leading-relaxed text-faint xl:block">
           Independent research tool. Detected changes are potential, not verified deforestation.
         </div>
       </nav>

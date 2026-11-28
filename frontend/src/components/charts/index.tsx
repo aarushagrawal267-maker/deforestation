@@ -100,7 +100,7 @@ export function ConfusionMatrix({ cm, names = CLASS_NAMES }: { cm: number[][]; n
           ))}
         </tbody>
       </table>
-      <div className="mt-1 text-[10px] text-faint">Row-normalised (recall per reference class). Hover a cell for pixel counts.</div>
+      <div className="mt-1 text-[11px] text-faint">Row-normalised (recall per reference class). Hover a cell for pixel counts.</div>
     </div>
   );
 }

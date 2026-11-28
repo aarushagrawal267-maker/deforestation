@@ -118,10 +118,10 @@ export default function SegmentationPage() {
               <ul className="divide-y divide-line">
                 {segs.map((r) => (
                   <li key={r.id}>
-                    <button className="flex w-full items-center justify-between py-2 text-left text-[12.5px]" onClick={() => setSelectedSeg(r.id)}>
+                    <button className="flex w-full items-center justify-between py-2 text-left text-[13px]" onClick={() => setSelectedSeg(r.id)}>
                       <span>
                         <span className={r.id === seg?.id ? "text-accent-strong" : "text-ink"}>{fmtDate(r.acquired)}</span>
-                        <span className="num block text-[10px] text-faint">{r.id}</span>
+                        <span className="num block text-[11px] text-faint">{r.id}</span>
                       </span>
                       <StatusBadge status={r.status} />
                     </button>
@@ -243,7 +243,7 @@ export default function SegmentationPage() {
                   })}
                 </div>
                 {exportRow && (
-                  <a className="mt-3 block text-xs text-accent-strong underline" href={exportRow.download_url}>
+                  <a className="mt-3 block text-[12px] text-accent-strong underline" href={exportRow.download_url}>
                     Download {exportRow.id}.zip (probabilities, class map, entropy, provenance)
                   </a>
                 )}

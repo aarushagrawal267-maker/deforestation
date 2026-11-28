@@ -24,7 +24,7 @@ function DatasetCard({ d }: { d: Record<string, any> }) {
         ]}
       />
       {d.status && <div className="mt-2"><Notice tone="warn">{d.status}</Notice></div>}
-      <ul className="mt-3 list-disc space-y-1 pl-4 text-[11.5px] text-muted">
+      <ul className="mt-3 list-disc space-y-1 pl-4 text-[12px] text-muted">
         {(d.limitations ?? []).map((l: string) => (
           <li key={l}>{l}</li>
         ))}
@@ -160,7 +160,7 @@ export default function DatasetsPage() {
             {layer === "labels" && (
               <div className="absolute bottom-3 left-3 rounded-lg border border-line bg-canvas/90 p-3">
                 <ClassLegend />
-                <div className="mt-1 text-[10px] text-faint">transparent = ignored</div>
+                <div className="mt-1 text-[11px] text-faint">transparent = ignored</div>
               </div>
             )}
           </div>
@@ -184,7 +184,7 @@ export default function DatasetsPage() {
                   </div>
                   <div className="text-[11px] text-muted">{r.description}</div>
                   {r.built && (
-                    <div className="num mt-0.5 text-[10.5px] text-faint">
+                    <div className="num mt-0.5 text-[11px] text-faint">
                       {fmtDate(r.acquired?.[0])} · {r.selection?.mode} · valid {fmtPct(r.selection?.valid_fraction, 0)} · labelled {fmtPct(r.label_report?.labelled_fraction, 0)}
                     </div>
                   )}
@@ -194,7 +194,7 @@ export default function DatasetsPage() {
           </ul>
           {counts && (
             <div className="mt-3 border-t border-line pt-3">
-              <div className="mb-1 text-[11px] uppercase tracking-[0.1em] text-muted">Labelled pixels, all built regions</div>
+              <div className="mb-1 text-[11px] text-muted">Labelled pixels, all built regions</div>
               <div className="flex h-3 overflow-hidden rounded">
                 {counts.map((c, i) => (
                   <div key={i} title={`${CLASS_NAMES[i]}: ${c.toLocaleString()}`} style={{ width: `${(c / total) * 100}%`, background: CLASS_COLORS[i] }} />
@@ -246,10 +246,10 @@ export default function DatasetsPage() {
       <div className="mt-4">
         <Card title="Monitoring observations (current AOI)" subtitle="Acquisition metadata, cloud and missing data">
           {!products?.length ? (
-            <div className="text-xs text-muted">No observations ingested for this AOI.</div>
+            <div className="text-[12px] text-muted">No observations ingested for this AOI.</div>
           ) : (
             <table className="w-full text-[12px]">
-              <thead className="text-left text-[10.5px] uppercase tracking-[0.08em] text-muted">
+              <thead className="text-left text-[11px] text-muted">
                 <tr>
                   <th className="py-1">Acquired</th>
                   <th>Scenes</th>
@@ -265,7 +265,7 @@ export default function DatasetsPage() {
                 {products.map((p) => (
                   <tr key={p.id}>
                     <td className="py-1.5">{fmtDate(p.acquired)}</td>
-                    <td className="num text-[10.5px] text-muted">{p.scene_ids.join(", ")}</td>
+                    <td className="num text-[11px] text-muted">{p.scene_ids.join(", ")}</td>
                     <td className="num text-muted">{p.processing_baselines.join(", ")}</td>
                     <td className="num">{fmtPct(p.valid_fraction)}</td>
                     <td className="num text-muted">{fmtPct(p.quality_summary["cloud"])}</td>

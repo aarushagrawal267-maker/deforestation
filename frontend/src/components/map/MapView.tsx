@@ -314,7 +314,7 @@ export function MapView({
     <div className={className ?? "relative h-full w-full"}>
       <div ref={el} style={{ position: "absolute", inset: 0 }} data-testid="map" />
       {showControls && cursor && (
-        <div className="num pointer-events-none absolute bottom-2 right-24 rounded bg-canvas/80 px-2 py-0.5 text-[10px] text-ink-2">
+        <div className="num pointer-events-none absolute bottom-2 right-24 rounded bg-canvas/80 px-2 py-0.5 text-[11px] text-ink-2">
           {cursor.lat.toFixed(5)}, {cursor.lng.toFixed(5)}
         </div>
       )}

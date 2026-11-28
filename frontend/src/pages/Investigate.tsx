@@ -73,8 +73,8 @@ function RegionList() {
           <Empty title="No regions match">Run a change analysis or relax the filters.</Empty>
         ) : (
           <Card bodyClass="p-0">
-            <table className="w-full text-[12.5px]">
-              <thead className="text-left text-[10.5px] uppercase tracking-[0.08em] text-muted">
+            <table className="w-full text-[13px]">
+              <thead className="text-left text-[11px] text-muted">
                 <tr className="border-b border-line">
                   <th className="px-4 py-2">Region</th>
                   <th>Location</th>
@@ -104,7 +104,7 @@ function RegionList() {
                     <td className="num">{signed(r.properties.delta_nbr, 2)}</td>
                     <td className="num">{fmtPct(r.properties.hansen_loss_fraction ?? null, 0)}</td>
                     <td>
-                      <span className={`rounded border px-1.5 py-0.5 text-[10.5px] ${EVIDENCE[r.evidence_level]?.tone}`}>{EVIDENCE[r.evidence_level]?.label}</span>
+                      <span className={`rounded border px-1.5 py-0.5 text-[11px] ${EVIDENCE[r.evidence_level]?.tone}`}>{EVIDENCE[r.evidence_level]?.label}</span>
                     </td>
                     <td className="text-[11px] text-muted">{r.review_status.replace(/_/g, " ")}</td>
                   </tr>
@@ -130,7 +130,7 @@ function Indicator({ label, before, after, delta }: { label: string; before: num
         ["before", before],
         ["after", after],
       ].map(([k, v]) => (
-        <div key={k as string} className="flex items-center gap-2 text-[10.5px]">
+        <div key={k as string} className="flex items-center gap-2 text-[11px]">
           <span className="w-10 text-faint">{k}</span>
           <div className="relative h-1.5 flex-1 rounded bg-sunken">
             <div className="absolute inset-y-0 left-1/2 w-px bg-line-strong" />
@@ -200,7 +200,7 @@ function RegionDetail({ id }: { id: string }) {
 
   return (
     <div>
-      <button onClick={() => nav("/investigate")} className="mb-3 flex items-center gap-1 text-xs text-muted hover:text-ink">
+      <button onClick={() => nav("/investigate")} className="mb-3 flex items-center gap-1 text-[12px] text-muted hover:text-ink">
         <ArrowLeft className="h-3.5 w-3.5" /> All regions
       </button>
       <PageHeader
@@ -229,7 +229,7 @@ function RegionDetail({ id }: { id: string }) {
         }
       />
       {exportRow && (
-        <a className="mb-3 block text-xs text-accent-strong underline" href={exportRow.download_url}>
+        <a className="mb-3 block text-[12px] text-accent-strong underline" href={exportRow.download_url}>
           Download {exportRow.id}.zip
         </a>
       )}
@@ -239,7 +239,7 @@ function RegionDetail({ id }: { id: string }) {
             title="Before / after imagery"
             subtitle="Sentinel-2 chips of the region on both dates (outline on map below)"
             actions={
-              <Select className="h-7 w-44 text-xs" value={render} onChange={(e) => setRender(e.target.value)}>
+              <Select className="h-7 w-44 text-[12px]" value={render} onChange={(e) => setRender(e.target.value)}>
                 <option value="truecolor">True colour</option>
                 <option value="falsecolor">False colour (B8 B4 B3)</option>
                 <option value="swir">SWIR (B12 B8A B4)</option>
@@ -294,7 +294,7 @@ function RegionDetail({ id }: { id: string }) {
                 ["Model confidence", r.run_summary.calibrated ? "calibrated (temperature scaling)" : "uncalibrated: probabilities not interpretable as confidence"],
               ]}
             />
-            <p className="mt-2 text-[10.5px] leading-relaxed text-faint">{String(r.run_summary.area_note ?? "")}</p>
+            <p className="mt-2 text-[11px] leading-relaxed text-faint">{String(r.run_summary.area_note ?? "")}</p>
           </Card>
           <Card title="Spectral indicators" subtitle="Supporting evidence only">
             <div className="space-y-3">
@@ -312,7 +312,7 @@ function RegionDetail({ id }: { id: string }) {
                     {s.ok && <Check className="h-2.5 w-2.5 text-accent-strong" />}
                   </span>
                   <div>
-                    <div className="text-[12.5px] text-ink">{s.label}</div>
+                    <div className="text-[13px] text-ink">{s.label}</div>
                     <div className="text-[11px] text-muted">{s.detail}</div>
                   </div>
                 </li>

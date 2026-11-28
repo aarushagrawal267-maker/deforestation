@@ -74,7 +74,7 @@ function NewExperiment({ onCreated }: { onCreated: (id: string) => void }) {
               <div key={r.name} className="flex items-center justify-between gap-2 text-[12px]">
                 <span className="min-w-0 truncate text-ink-2" title={r.name}>{r.name}</span>
                 <div className="w-24 shrink-0">
-                <Select className="h-7 text-xs" value={role(r.name, r.role)} onChange={(e) => setRoles((x) => ({ ...x, [r.name]: e.target.value }))}>
+                <Select className="h-7 text-[12px]" value={role(r.name, r.role)} onChange={(e) => setRoles((x) => ({ ...x, [r.name]: e.target.value }))}>
                   <option value="train">train</option>
                   <option value="val">val</option>
                   <option value="test">test</option>
@@ -152,7 +152,7 @@ function ExperimentDetail({ id }: { id: string }) {
               ["Train regions", <span className="text-[11px]">{e.config.train_regions.join(", ")}</span>],
               ["Validation", <span className="text-[11px]">{e.config.val_regions.join(", ")}</span>],
               ["Test (held out)", <span className="text-[11px]">{e.config.test_regions.join(", ")}</span>],
-              ["Checkpoint SHA-256", <span className="num text-[10px]">{e.checkpoint_sha256?.slice(0, 16) ?? "—"}</span>],
+              ["Checkpoint SHA-256", <span className="num text-[11px]">{e.checkpoint_sha256?.slice(0, 16) ?? "—"}</span>],
             ]}
           />
         </div>
@@ -200,8 +200,8 @@ export default function LabPage() {
             {!exps?.length ? (
               <Empty title="No experiments yet">Configure and start a training run.</Empty>
             ) : (
-              <table className="w-full text-[12.5px]">
-                <thead className="text-left text-[10.5px] uppercase tracking-[0.08em] text-muted">
+              <table className="w-full text-[13px]">
+                <thead className="text-left text-[11px] text-muted">
                   <tr>
                     <th className="py-1.5">Name</th>
                     <th>Status</th>
@@ -217,7 +217,7 @@ export default function LabPage() {
                     <tr key={e.id} onClick={() => setSelected(e.id)} className={clsx("cursor-pointer hover:bg-raised", e.id === id && "bg-accent-soft/40")}>
                       <td className="py-2">
                         {e.name} {settings?.active_experiment_id === e.id && <Star className="inline h-3 w-3 text-accent-strong" />}
-                        <div className="num text-[10px] text-faint">{e.id}</div>
+                        <div className="num text-[11px] text-faint">{e.id}</div>
                       </td>
                       <td>
                         <StatusBadge status={e.status} />

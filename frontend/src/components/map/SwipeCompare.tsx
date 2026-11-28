@@ -50,7 +50,7 @@ export function SwipeCompare({
       <button
         aria-label="Drag to compare"
         onPointerDown={drag}
-        className="absolute top-1/2 z-10 flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 cursor-ew-resize items-center justify-center rounded-full border border-white/70 bg-canvas/90 text-xs text-ink"
+        className="absolute top-1/2 z-10 flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 cursor-ew-resize items-center justify-center rounded-full border border-white/70 bg-canvas/90 text-[12px] text-ink"
         style={{ left: `${pos * 100}%` }}
       >
         ⇆

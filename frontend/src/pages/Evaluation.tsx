@@ -98,8 +98,8 @@ export default function EvaluationPage() {
 
           <div className="mt-4 grid gap-4 lg:grid-cols-2">
             <Card title="Per-class metrics" subtitle="Against WorldCover-derived reference labels, test regions">
-              <table className="w-full text-[12.5px]">
-                <thead className="text-left text-[10.5px] uppercase tracking-[0.08em] text-muted">
+              <table className="w-full text-[13px]">
+                <thead className="text-left text-[11px] text-muted">
                   <tr>
                     <th className="py-1">Class</th>
                     <th>IoU</th>
@@ -133,8 +133,8 @@ export default function EvaluationPage() {
 
           <div className="mt-4 grid gap-4 lg:grid-cols-2">
             <Card title="Geographic validation" subtitle="Results per held-out region">
-              <table className="w-full text-[12.5px]">
-                <thead className="text-left text-[10.5px] uppercase tracking-[0.08em] text-muted">
+              <table className="w-full text-[13px]">
+                <thead className="text-left text-[11px] text-muted">
                   <tr>
                     <th className="py-1">Region</th>
                     <th>mIoU</th>
@@ -167,7 +167,7 @@ export default function EvaluationPage() {
                   </div>
                 </>
               ) : (
-                <div className="text-xs text-muted">No calibration available.</div>
+                <div className="text-[12px] text-muted">No calibration available.</div>
               )}
             </Card>
           </div>
@@ -196,7 +196,7 @@ export default function EvaluationPage() {
               </div>
             </Card>
             <Card title="Training history" subtitle={exp?.name}>
-              {exp?.epochs?.length ? <LossCurves epochs={exp.epochs} /> : <div className="text-xs text-muted">No epochs</div>}
+              {exp?.epochs?.length ? <LossCurves epochs={exp.epochs} /> : <div className="text-[12px] text-muted">No epochs</div>}
               <ul className="mt-3 list-disc space-y-1 pl-4 text-[11px] text-muted">
                 {r.notes.map((n) => (
                   <li key={n}>{n}</li>

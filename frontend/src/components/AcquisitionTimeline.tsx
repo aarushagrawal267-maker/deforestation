@@ -59,12 +59,12 @@ export function AcquisitionTimeline({
         {months
           .filter((_, i) => i % step === 0)
           .map((m) => (
-            <span key={m.label + m.x} className="num absolute -translate-x-1/2 text-[9.5px] text-faint" style={{ left: `${m.x}%` }}>
+            <span key={m.label + m.x} className="num absolute -translate-x-1/2 text-[11px] text-faint" style={{ left: `${m.x}%` }}>
               {m.label}
             </span>
           ))}
       </div>
-      <div className="absolute right-2 top-1.5 text-[9.5px] text-faint">taller = clearer scene</div>
+      <div className="absolute right-2 top-1.5 text-[11px] text-faint">taller = clearer scene</div>
     </div>
   );
 }
