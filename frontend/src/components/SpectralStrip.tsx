@@ -60,7 +60,7 @@ export function SpectralStrip({
               style={{ left: `${pos(i)}%` }}
             >
               <span
-                className={clsx("block w-[14px] rounded-sm border transition-all", on ? "border-white/80" : "border-transparent opacity-45")}
+                className={clsx("block w-[14px] rounded-sm border transition-[opacity,border-color] duration-150", on ? "border-white/80" : "border-transparent opacity-45")}
                 style={{
                   height: v !== undefined && v !== null ? `${Math.max(4, Math.min(34, v * 70))}px` : "22px",
                   background:

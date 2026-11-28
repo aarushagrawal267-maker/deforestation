@@ -35,16 +35,16 @@ const NAV = [
 
 function Logo() {
   return (
-    <div className="flex items-center gap-2.5 px-3 pb-5 pt-4">
+    <div className="flex items-center gap-3 px-3 pb-6 pt-4">
       <svg viewBox="0 0 32 32" className="h-8 w-8 shrink-0" aria-hidden>
         <rect width="32" height="32" rx="8" fill="#202322" stroke="#3b3f3d" />
         <path d="M16 6c4.6 4.6 6.5 8.3 6.5 11.8a6.5 6.5 0 0 1-13 0C9.5 14.3 11.4 10.6 16 6z" fill="#3faf86" />
         <path d="M16 12.5v13" stroke="#121413" strokeWidth="1.8" strokeLinecap="round" />
         <path d="M16 18l3-2.4M16 21.5l-3-2.4" stroke="#121413" strokeWidth="1.4" strokeLinecap="round" />
       </svg>
-      <div className="hidden xl:block">
+      <div className="hidden min-w-0 xl:block">
         <div className="font-display text-[18px] leading-none font-medium">Sylva</div>
-        <div className="mt-0.5 text-[11px] text-muted">Forest change intelligence</div>
+        <div className="mt-1 whitespace-nowrap text-[11px] text-muted">Forest change intelligence</div>
       </div>
     </div>
   );
@@ -118,7 +118,7 @@ export function Shell({ children }: { children: ReactNode }) {
   const fullBleed = loc.pathname === "/map";
   return (
     <div className="flex h-full">
-      <nav className="flex w-[64px] shrink-0 flex-col border-r border-line bg-sunken xl:w-[220px]" aria-label="Main">
+      <nav className="flex w-[64px] shrink-0 flex-col border-r border-line bg-sunken xl:w-[240px]" aria-label="Main">
         <Logo />
         <ul className="flex-1 space-y-0.5 px-2">
           {NAV.map(({ to, label, icon: Icon }) => (
@@ -129,14 +129,16 @@ export function Shell({ children }: { children: ReactNode }) {
                 title={label}
                 className={({ isActive }) =>
                   clsx(
-                    "group flex items-center gap-3 rounded-lg px-2.5 py-2 text-[13px] transition-colors duration-150",
-                    isActive ? "bg-accent-soft text-ink" : "text-muted hover:bg-raised hover:text-ink",
+                    "group flex h-9 items-center gap-3 rounded-lg border px-2.5 text-[13px] transition-colors duration-150",
+                    isActive
+                      ? "border-line bg-raised text-ink shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
+                      : "border-transparent text-muted hover:bg-raised/60 hover:text-ink",
                   )
                 }
               >
                 {({ isActive }) => (
                   <>
-                    <Icon className={clsx("h-[18px] w-[18px] shrink-0", isActive ? "text-accent-strong" : "")} strokeWidth={1.7} />
+                    <Icon className={clsx("h-[18px] w-[18px] shrink-0", isActive ? "text-accent-strong" : "")} strokeWidth={1.5} />
                     <span className="hidden xl:inline">{label}</span>
                   </>
                 )}

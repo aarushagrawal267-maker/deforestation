@@ -17,7 +17,7 @@ export function PageHeader({
   return (
     <header className="flex flex-wrap items-end justify-between gap-4 pb-6">
       <div className="max-w-3xl">
-        {eyebrow && <div className="mb-1.5 text-[11px] font-medium text-accent">{eyebrow}</div>}
+        {eyebrow && <div className="mb-2 text-[12px] font-medium text-accent">{eyebrow}</div>}
         <h1 className="font-display text-[30px] leading-tight font-medium text-ink">{title}</h1>
         {description && <p className="mt-2 text-[14px] leading-relaxed text-muted">{description}</p>}
       </div>
@@ -76,16 +76,16 @@ export function Stat({
     ? { loss: "text-loss", gain: "text-gain", forest: "text-accent-strong", uncertain: "text-uncertain" }[tone]
     : "text-ink";
   return (
-    <div className="rounded-xl border border-line bg-surface px-4 py-3.5">
+    <div className="rounded-xl border border-line bg-surface px-4 py-4">
       <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted">
         {swatch && <span className={clsx("inline-block h-2 w-2 rounded-sm", swatch)} />}
         {label}
       </div>
-      <div className={clsx("num mt-1.5 text-[24px] leading-none font-medium", toneClass)}>
+      <div className={clsx("num mt-2 text-[24px] leading-none font-medium", toneClass)}>
         {value}
         {unit && <span className="ml-1 text-[14px] text-muted">{unit}</span>}
       </div>
-      {sub && <div className="mt-1.5 text-[12px] text-muted">{sub}</div>}
+      {sub && <div className="mt-2 text-[12px] text-muted">{sub}</div>}
     </div>
   );
 }

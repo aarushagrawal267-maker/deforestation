@@ -43,7 +43,7 @@ export function AcquisitionTimeline({
               onClick={() => onSelect(s)}
               title={`${s.date} · ${s.platform} · ${s.mgrs_tile} · cloud ${cc.toFixed(1)}%`}
               className={clsx(
-                "absolute bottom-0 w-[5px] -translate-x-1/2 rounded-t-sm transition-all hover:w-[7px]",
+                "absolute bottom-0 w-[5px] -translate-x-1/2 rounded-t-sm transition-opacity duration-150 hover:opacity-75",
                 on ? "bg-white ring-2 ring-accent" : "",
               )}
               style={{
