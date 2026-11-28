@@ -72,7 +72,7 @@ function MissionHeader() {
         <span className="text-[11px] text-muted">AOI</span>
         <select
           aria-label="Monitoring area"
-          className="h-8 max-w-[18rem] truncate bg-transparent text-[13px] text-ink outline-none"
+          className="h-8 min-w-0 max-w-[18rem] truncate bg-transparent text-[13px] text-ink outline-none"
           value={aoiId ?? ""}
           onChange={(e) => setAoiId(e.target.value)}
         >
@@ -84,7 +84,7 @@ function MissionHeader() {
         </select>
       </div>
       {aoi && <span className="num hidden text-[11px] text-muted md:inline">{fmtNum(aoi.area_km2, 0)} km² · {aoi.grid.crs}</span>}
-      <div className="ml-auto flex items-center gap-2">
+      <div className="ml-auto flex shrink-0 items-center gap-2">
         {running.length > 0 && (
           <NavLink to="/history" className="flex items-center gap-1.5 rounded-lg border border-gain/40 px-2.5 py-1 text-[11px] text-gain">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-gain" />
@@ -93,16 +93,20 @@ function MissionHeader() {
         )}
         <NavLink
           to="/lab"
+          title={model ? `${model.name} · mIoU(val) ${model.best_val_miou?.toFixed(3) ?? "—"}` : undefined}
           className={clsx(
-            "flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px]",
+            "flex items-center gap-1.5 whitespace-nowrap rounded-lg border px-2.5 py-1 text-[11px]",
             model ? "border-line text-ink-2" : "border-uncertain/40 text-uncertain",
           )}
         >
-          <Boxes className="h-3.5 w-3.5" />
+          <Boxes className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
           {model ? (
             <>
-              {model.name}
-              <span className="num text-muted">mIoU(val) {model.best_val_miou?.toFixed(3) ?? "—"}</span>
+              <span className="hidden sm:inline">{model.name}</span>
+              <span className="num text-muted">
+                <span className="hidden sm:inline">mIoU(val) </span>
+                {model.best_val_miou?.toFixed(3) ?? "—"}
+              </span>
             </>
           ) : (
             "No model active"
