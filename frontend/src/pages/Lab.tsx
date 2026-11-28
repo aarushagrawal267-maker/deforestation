@@ -196,7 +196,7 @@ export default function LabPage() {
           />
         </div>
         <div className="space-y-4">
-          <Card title="Experiments" subtitle="Click to inspect; compare validation results">
+          <Card title="Experiments" subtitle="Click to inspect; compare validation results" bodyClass="overflow-x-auto">
             {!exps?.length ? (
               <Empty title="No experiments yet">Configure and start a training run.</Empty>
             ) : (
@@ -214,7 +214,7 @@ export default function LabPage() {
                 </thead>
                 <tbody className="divide-y divide-line">
                   {exps.map((e) => (
-                    <tr key={e.id} onClick={() => setSelected(e.id)} className={clsx("cursor-pointer hover:bg-raised", e.id === id && "bg-accent-soft/40")}>
+                    <tr key={e.id} onClick={() => setSelected(e.id)} className={clsx("cursor-pointer hover:bg-raised", e.id === id && "bg-raised shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]")}>
                       <td className="py-2">
                         {e.name} {settings?.active_experiment_id === e.id && <Star className="inline h-3 w-3 text-accent-strong" />}
                         <div className="num text-[11px] text-faint">{e.id}</div>

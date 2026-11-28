@@ -96,7 +96,7 @@ export default function DatasetsPage() {
             </tbody>
           </table>
         </Card>
-        <Card title="Label scheme" subtitle="WorldCover classes mapped to Sylva segmentation classes">
+        <Card title="Label scheme" subtitle="WorldCover classes mapped to Sylva segmentation classes" bodyClass="overflow-x-auto">
           <table className="w-full text-[12px]">
             <tbody className="divide-y divide-line">
               {ds.worldcover_mapping
@@ -132,7 +132,7 @@ export default function DatasetsPage() {
           title="Training regions"
           subtitle={`Label year ${tr?.label_year} · split by whole region to prevent spatial leakage`}
           actions={
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <Tabs
                 value={layer}
                 onChange={setLayer}
@@ -244,7 +244,7 @@ export default function DatasetsPage() {
       )}
 
       <div className="mt-4">
-        <Card title="Monitoring observations (current AOI)" subtitle="Acquisition metadata, cloud and missing data">
+        <Card title="Monitoring observations (current AOI)" subtitle="Acquisition metadata, cloud and missing data" bodyClass="overflow-x-auto">
           {!products?.length ? (
             <div className="text-[12px] text-muted">No observations ingested for this AOI.</div>
           ) : (

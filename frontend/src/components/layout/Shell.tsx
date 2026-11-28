@@ -104,7 +104,7 @@ function MissionHeader() {
             <>
               <span className="hidden sm:inline">{model.name}</span>
               <span className="num text-muted">
-                <span className="hidden sm:inline">mIoU(val) </span>
+                mIoU<span className="hidden sm:inline">(val)</span>{" "}
                 {model.best_val_miou?.toFixed(3) ?? "—"}
               </span>
             </>

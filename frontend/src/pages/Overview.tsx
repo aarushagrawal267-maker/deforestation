@@ -103,7 +103,7 @@ export default function OverviewPage() {
         />
         <Stat
           label="Cloud / invalid"
-          tone="uncertain"
+          swatch="hatch-invalid"
           value={s ? fmtPct(s.category_areas.invalid.fraction) : latestObs ? fmtPct(1 - latestObs.valid_fraction) : "—"}
           sub="cloud, shadow, buffer or no data"
         />

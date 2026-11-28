@@ -53,6 +53,15 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+th {
+  font-weight: 500;
+}
+
+/* Grid children may shrink below their content width, so cards fit a phone screen */
+.grid > * {
+  min-width: 0;
+}
+
 .num {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
@@ -92,6 +101,10 @@ body {
   color: var(--color-muted);
   font-size: 11px;
 }
+.maplibregl-ctrl.maplibregl-ctrl-attrib,
+.maplibregl-ctrl-attrib-inner {
+  color: var(--color-muted);
+}
 .maplibregl-ctrl-attrib a {
   color: var(--color-ink-2) !important;
 }
@@ -100,6 +113,7 @@ body {
   color: var(--color-ink-2);
   border-color: var(--color-ink-2);
   font-family: var(--font-mono);
+  font-size: 11px;
 }
 .maplibregl-popup-content {
   background: var(--color-surface);
@@ -185,7 +199,7 @@ body {
 }
 .prose-sylva th {
   color: var(--color-ink);
-  font-weight: 600;
+  font-weight: 500;
 }
 .prose-sylva a {
   color: var(--color-accent-strong);

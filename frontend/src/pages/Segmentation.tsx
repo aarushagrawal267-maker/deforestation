@@ -137,7 +137,7 @@ export default function SegmentationPage() {
             bodyClass="p-0"
             title={seg ? `Prediction · ${fmtDate(seg.acquired)}` : "Prediction"}
             actions={
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <Tabs
                   value={layer}
                   onChange={setLayer}

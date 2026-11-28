@@ -267,7 +267,7 @@ export default function ExplorerPage() {
                   </thead>
                   <tbody className="divide-y divide-line">
                     {products.map((p) => (
-                      <tr key={p.id} className={clsx(p.id === viewProduct?.id && "bg-accent-soft/40")}>
+                      <tr key={p.id} className={clsx(p.id === viewProduct?.id && "bg-raised shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]")}>
                         <td className="py-2">
                           <button className="text-ink hover:underline" onClick={() => setViewId(p.id)}>
                             {fmtDate(p.acquired)}
@@ -361,7 +361,7 @@ export default function ExplorerPage() {
                   <li key={s.id}>
                     <button
                       onClick={() => toggleScene(s)}
-                      className={clsx("flex w-full items-center gap-3 px-1 py-1.5 text-left", picked.includes(s.id) && "bg-accent-soft/50")}
+                      className={clsx("flex w-full items-center gap-3 px-1 py-1.5 text-left", picked.includes(s.id) && "bg-raised shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]")}
                     >
                       {s.thumbnail ? (
                         <img src={s.thumbnail} alt="" loading="lazy" className="h-10 w-10 rounded object-cover" />

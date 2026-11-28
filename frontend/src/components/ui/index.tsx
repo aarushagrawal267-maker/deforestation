@@ -44,8 +44,8 @@ export function Card({
   return (
     <section className={clsx("rounded-xl border border-line bg-surface", className)}>
       {(title || actions) && (
-        <div className="flex items-start justify-between gap-3 border-b border-line px-4 py-3">
-          <div>
+        <div className="flex flex-wrap items-start justify-between gap-3 border-b border-line px-4 py-3">
+          <div className="min-w-0">
             {title && <h2 className="text-[13px] font-semibold text-ink">{title}</h2>}
             {subtitle && <p className="mt-0.5 text-[12px] text-muted">{subtitle}</p>}
           </div>
@@ -78,7 +78,7 @@ export function Stat({
   return (
     <div className="rounded-xl border border-line bg-surface px-4 py-4">
       <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted">
-        {swatch && <span className={clsx("inline-block h-2 w-2 rounded-sm", swatch)} />}
+        {swatch && <span className={clsx("inline-block h-3 w-3 shrink-0 rounded-[3px] border border-white/10", swatch)} />}
         {label}
       </div>
       <div className={clsx("num mt-2 text-[24px] leading-none font-medium", toneClass)}>
@@ -107,7 +107,7 @@ export function Button({
       {...rest}
       disabled={rest.disabled || loading}
       className={clsx(
-        "inline-flex items-center justify-center gap-1.5 rounded-lg font-medium transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-45 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
+        "inline-flex shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg font-medium transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-45 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
         size === "sm" ? "h-7 px-2.5 text-[12px]" : "h-9 px-3.5 text-[13px]",
         variant === "primary" && "bg-accent text-canvas hover:bg-accent-strong",
         variant === "secondary" && "border border-line-strong bg-raised text-ink hover:border-accent/60",
@@ -279,7 +279,7 @@ export function Tabs<T extends string>({
   items: { value: T; label: ReactNode }[];
 }) {
   return (
-    <div className="inline-flex rounded-lg border border-line bg-sunken p-0.5">
+    <div className="inline-flex max-w-full flex-wrap rounded-lg border border-line bg-sunken p-0.5">
       {items.map((it) => (
         <button
           key={it.value}

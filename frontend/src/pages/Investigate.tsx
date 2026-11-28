@@ -72,7 +72,7 @@ function RegionList() {
         ) : !regions?.length ? (
           <Empty title="No regions match">Run a change analysis or relax the filters.</Empty>
         ) : (
-          <Card bodyClass="p-0">
+          <Card bodyClass="p-0 overflow-x-auto">
             <table className="w-full text-[13px]">
               <thead className="text-left text-[11px] text-muted">
                 <tr className="border-b border-line">

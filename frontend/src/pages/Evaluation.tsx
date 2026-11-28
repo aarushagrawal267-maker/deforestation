@@ -97,7 +97,7 @@ export default function EvaluationPage() {
           </div>
 
           <div className="mt-4 grid gap-4 lg:grid-cols-2">
-            <Card title="Per-class metrics" subtitle="Against WorldCover-derived reference labels, test regions">
+            <Card title="Per-class metrics" subtitle="Against WorldCover-derived reference labels, test regions" bodyClass="overflow-x-auto">
               <table className="w-full text-[13px]">
                 <thead className="text-left text-[11px] text-muted">
                   <tr>
@@ -132,7 +132,7 @@ export default function EvaluationPage() {
           </div>
 
           <div className="mt-4 grid gap-4 lg:grid-cols-2">
-            <Card title="Geographic validation" subtitle="Results per held-out region">
+            <Card title="Geographic validation" subtitle="Results per held-out region" bodyClass="overflow-x-auto">
               <table className="w-full text-[13px]">
                 <thead className="text-left text-[11px] text-muted">
                   <tr>
