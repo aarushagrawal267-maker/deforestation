@@ -64,12 +64,12 @@ export default function OverviewPage() {
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat
           label="Latest observation"
-          value={<span className="text-[1.15rem]">{fmtDate(change?.after_acquired ?? latestObs?.acquired)}</span>}
+          value={<span className="text-[18px]">{fmtDate(change?.after_acquired ?? latestObs?.acquired)}</span>}
           sub={change ? "later date of latest analysis" : latestObs ? `${data.n_observations} observation(s) ingested` : "none ingested yet"}
         />
         <Stat
           label="Previous observation"
-          value={<span className="text-[1.15rem]">{fmtDate(change?.before_acquired ?? prevObs?.acquired)}</span>}
+          value={<span className="text-[18px]">{fmtDate(change?.before_acquired ?? prevObs?.acquired)}</span>}
           sub={change ? "earlier date of latest analysis" : "—"}
         />
         <Stat
@@ -103,13 +103,13 @@ export default function OverviewPage() {
         />
         <Stat
           label="Cloud / invalid"
-          tone="uncertain"
+          swatch="hatch-invalid"
           value={s ? fmtPct(s.category_areas.invalid.fraction) : latestObs ? fmtPct(1 - latestObs.valid_fraction) : "—"}
           sub="cloud, shadow, buffer or no data"
         />
         <Stat
           label="Model"
-          value={<span className="text-[1.05rem]">{data.model?.name ?? "not trained"}</span>}
+          value={<span className="text-[18px]">{data.model?.name ?? "not trained"}</span>}
           sub={
             data.model
               ? `val mIoU ${data.model.best_val_miou?.toFixed(3) ?? "—"} · ${data.model.calibrated ? "calibrated" : "uncalibrated"}${
@@ -126,7 +126,7 @@ export default function OverviewPage() {
           subtitle={change ? `${fmtDate(change.before_acquired)} → ${fmtDate(change.after_acquired)}` : "No completed change analysis yet"}
           actions={
             change && (
-              <Link to={`/map?run=${change.id}`} className="flex items-center gap-1 text-xs text-accent-strong hover:underline">
+              <Link to={`/map?run=${change.id}`} className="flex items-center gap-1 text-[12px] text-accent-strong hover:underline">
                 Open map <ArrowRight className="h-3 w-3" />
               </Link>
             )
@@ -181,7 +181,7 @@ export default function OverviewPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      {r.headline.potential_loss_ha != null && <span className="num text-xs text-loss">{fmtHa(r.headline.potential_loss_ha)}</span>}
+                      {r.headline.potential_loss_ha != null && <span className="num text-[12px] text-loss">{fmtHa(r.headline.potential_loss_ha)}</span>}
                       <StatusBadge status={r.status} />
                     </div>
                   </li>

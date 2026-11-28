@@ -42,7 +42,7 @@ export function SpectralStrip({
   const pos = (i: number) => (i < 8 ? 4 + i * 9.6 : 4 + 7 * 9.6 + 14 + (i - 8) * 9.6);
   return (
     <div>
-      <div className="relative h-[72px] rounded-lg border border-line bg-sunken">
+      <div className="relative h-[88px] rounded-lg border border-line bg-sunken">
         <div className="absolute bottom-2 top-5 w-px bg-line-strong" style={{ left: `${(pos(7) + pos(8)) / 2}%` }} />
         {BANDS.map((b, i) => {
           const on = selected.includes(b.name);
@@ -60,7 +60,7 @@ export function SpectralStrip({
               style={{ left: `${pos(i)}%` }}
             >
               <span
-                className={clsx("block w-[14px] rounded-sm border transition-all", on ? "border-white/80" : "border-transparent opacity-45")}
+                className={clsx("block w-[14px] rounded-sm border transition-[opacity,border-color] duration-150", on ? "border-white/80" : "border-transparent opacity-45")}
                 style={{
                   height: v !== undefined && v !== null ? `${Math.max(4, Math.min(34, v * 70))}px` : "22px",
                   background:
@@ -69,14 +69,14 @@ export function SpectralStrip({
                       : COLOR[b.name],
                 }}
               />
-              <span className={clsx("num text-[9.5px] leading-none", on ? "text-ink" : "text-faint")}>{b.name}</span>
-              <span className="num text-[8px] leading-none text-faint">{b.nm}</span>
+              <span className={clsx("num text-[11px] leading-none", on ? "text-ink" : "text-faint")}>{b.name}</span>
+              <span className="num text-[11px] leading-none text-faint">{b.nm}</span>
             </button>
           );
         })}
-        <div className="num absolute right-2 top-1 text-[9px] text-faint">{multi ? "click to toggle · " : ""}VNIR │ SWIR</div>
+        <div className="num absolute right-2 top-1 text-[11px] text-faint">{multi ? "click to toggle · " : ""}VNIR │ SWIR</div>
       </div>
-      <div className="mt-1.5 flex gap-4 text-[10px] text-faint">
+      <div className="mt-1.5 flex gap-4 text-[11px] text-faint">
         <span className="flex items-center gap-1">
           <span className="inline-block h-2.5 w-2.5 rounded-sm bg-[#8a6d5a]" /> native 10 m
         </span>

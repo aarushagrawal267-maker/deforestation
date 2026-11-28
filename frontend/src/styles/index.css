@@ -3,23 +3,24 @@
 
 /* ------------------------------------------------------------------
    Canopy Instrument design tokens
-   Quiet surfaces, precise type; colour reserved for data.
+   Near-neutral graphite surfaces, precise type; green lives in the
+   accent and the map, colour is reserved for data.
 ------------------------------------------------------------------- */
 @theme {
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Fraunces Variable", ui-serif, Georgia, serif;
   --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
 
-  --color-canvas: #0b1310;
-  --color-surface: #121b17;
-  --color-raised: #18231e;
-  --color-sunken: #0e1613;
-  --color-line: #25332c;
-  --color-line-strong: #34463d;
-  --color-ink: #e4ece7;
-  --color-ink-2: #b8c7bf;
-  --color-muted: #8da197;
-  --color-faint: #5f7268;
+  --color-canvas: #121413;
+  --color-surface: #181a19;
+  --color-raised: #202322;
+  --color-sunken: #0e100f;
+  --color-line: #2a2d2b;
+  --color-line-strong: #3b3f3d;
+  --color-ink: #e8ebe9;
+  --color-ink-2: #b6bcb8;
+  --color-muted: #9aa19d;
+  --color-faint: #858c88;
   --color-accent: #3faf86;
   --color-accent-strong: #5cc79f;
   --color-accent-soft: #173a2d;
@@ -52,10 +53,18 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+th {
+  font-weight: 500;
+}
+
+/* Grid children may shrink below their content width, so cards fit a phone screen */
+.grid > * {
+  min-width: 0;
+}
+
 .num {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.01em;
 }
 
 .hatch-uncertain {
@@ -88,18 +97,23 @@ body {
   filter: invert(0.85);
 }
 .maplibregl-ctrl-attrib {
-  background: rgba(11, 19, 16, 0.75) !important;
+  background: rgba(18, 20, 19, 0.8) !important;
   color: var(--color-muted);
-  font-size: 10px;
+  font-size: 11px;
+}
+.maplibregl-ctrl.maplibregl-ctrl-attrib,
+.maplibregl-ctrl-attrib-inner {
+  color: var(--color-muted);
 }
 .maplibregl-ctrl-attrib a {
   color: var(--color-ink-2) !important;
 }
 .maplibregl-ctrl-scale {
-  background: rgba(11, 19, 16, 0.7);
+  background: rgba(18, 20, 19, 0.8);
   color: var(--color-ink-2);
   border-color: var(--color-ink-2);
   font-family: var(--font-mono);
+  font-size: 11px;
 }
 .maplibregl-popup-content {
   background: var(--color-surface);
@@ -114,28 +128,28 @@ body {
 
 .prose-sylva h1 {
   font-family: var(--font-display);
-  font-size: 2rem;
+  font-size: 1.875rem;
   font-weight: 500;
   margin: 0 0 1rem;
 }
 .prose-sylva h2 {
   font-family: var(--font-display);
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 500;
   margin: 2rem 0 0.75rem;
   padding-top: 1rem;
   border-top: 1px solid var(--color-line);
 }
 .prose-sylva h3 {
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 1.125rem;
+  font-weight: 500;
   margin: 1.5rem 0 0.5rem;
 }
 .prose-sylva p,
 .prose-sylva li {
   color: var(--color-ink-2);
   line-height: 1.7;
-  font-size: 0.925rem;
+  font-size: 0.875rem;
 }
 .prose-sylva ul,
 .prose-sylva ol {
@@ -173,7 +187,7 @@ body {
   width: 100%;
   border-collapse: collapse;
   margin: 0.75rem 0 1.25rem;
-  font-size: 0.85rem;
+  font-size: 0.8125rem;
 }
 .prose-sylva th,
 .prose-sylva td {
@@ -185,7 +199,7 @@ body {
 }
 .prose-sylva th {
   color: var(--color-ink);
-  font-weight: 600;
+  font-weight: 500;
 }
 .prose-sylva a {
   color: var(--color-accent-strong);

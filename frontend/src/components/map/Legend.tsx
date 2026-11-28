@@ -25,7 +25,7 @@ export function ProbabilityRamp({ label = "P(tree cover)" }: { label?: string })
     <div>
       <div className="mb-1 text-[11px] text-ink-2">{label}</div>
       <div className="h-2.5 rounded" style={{ background: "linear-gradient(90deg,#ece2c6 0%,#bec478 40%,#6ea050 60%,#0c4628 100%)" }} />
-      <div className="num mt-0.5 flex justify-between text-[10px] text-muted">
+      <div className="num mt-0.5 flex justify-between text-[11px] text-muted">
         <span>0</span>
         <span>0.4</span>
         <span>0.6</span>
@@ -40,7 +40,7 @@ export function DeltaRamp() {
     <div>
       <div className="mb-1 text-[11px] text-ink-2">Δ P(tree), later − earlier</div>
       <div className="h-2.5 rounded" style={{ background: "linear-gradient(90deg,#b2182b,#ef8a62,#f7f7f7,#67a9cf,#2166ac)" }} />
-      <div className="num mt-0.5 flex justify-between text-[10px] text-muted">
+      <div className="num mt-0.5 flex justify-between text-[11px] text-muted">
         <span>−1</span>
         <span>0</span>
         <span>+1</span>

@@ -120,7 +120,7 @@ export default function MapPage() {
           {LAYER_META[k].label}
         </button>
       </div>
-      {!available && hint && <div className="pl-5.5 text-[10px] text-faint">{hint}</div>}
+      {!available && hint && <div className="pl-5.5 text-[11px] text-faint">{hint}</div>}
       {available && vis[k] && opacity[k] !== undefined && (
         <input
           aria-label={`${LAYER_META[k].label} opacity`}
@@ -193,7 +193,7 @@ export default function MapPage() {
         {panelOpen && (
           <div className="max-h-[calc(100vh-11rem)] space-y-3 overflow-y-auto p-3">
             <div className="space-y-2">
-              <label className="block text-[10px] uppercase tracking-[0.12em] text-muted">Change analysis</label>
+              <label className="block text-[11px] text-muted">Change analysis</label>
               <Select value={runId} onChange={(e) => setParams(e.target.value ? { run: e.target.value } : {})} aria-label="Change run">
                 <option value="">None</option>
                 {doneRuns.map((r) => (
@@ -202,7 +202,7 @@ export default function MapPage() {
                   </option>
                 ))}
               </Select>
-              <label className="block text-[10px] uppercase tracking-[0.12em] text-muted">Imagery</label>
+              <label className="block text-[11px] text-muted">Imagery</label>
               <ObservationSelect products={products} value={obsId} onChange={setObsId} placeholder={run ? "Later observation of run" : "Latest observation"} />
               <Select value={render} onChange={(e) => setRender(e.target.value)} aria-label="Imagery rendering">
                 <option value="truecolor">True colour (B4 B3 B2)</option>
@@ -215,7 +215,7 @@ export default function MapPage() {
               <div className="space-y-0.5">
                 {(["Observation", "Model", "Change", "Reference", "Context"] as const).map((g) => (
                   <div key={g}>
-                    <div className="px-2 pb-0.5 pt-2 text-[10px] uppercase tracking-[0.12em] text-faint">{g}</div>
+                    <div className="px-2 pb-0.5 pt-2 text-[11px] text-faint">{g}</div>
                     {(Object.keys(LAYER_META) as LayerKey[])
                       .filter((k) => LAYER_META[k].group === g)
                       .map((k) =>
@@ -248,7 +248,7 @@ export default function MapPage() {
               {vis.prob && run && <ProbabilityRamp />}
               {vis.delta && run && <DeltaRamp />}
               {vis.class && segForObs && <ClassLegend />}
-              {vis.hansen && <div className="text-[10px] text-muted">Hansen loss year: yellow (2001) → red (2025), 30 m</div>}
+              {vis.hansen && <div className="text-[11px] text-muted">Hansen loss year: yellow (2001) → red (2025), 30 m</div>}
             </div>
           </div>
         )}
@@ -309,7 +309,7 @@ export default function MapPage() {
               <div className="grid grid-cols-5 gap-1">
                 {Object.entries(pixel.reflectance as Record<string, number | null>).map(([b, v]) => (
                   <div key={b} className="rounded bg-sunken px-1 py-0.5 text-center">
-                    <div className="text-[9px] text-faint">{b}</div>
+                    <div className="text-[11px] text-faint">{b}</div>
                     <div className="num text-[11px]">{v?.toFixed(3) ?? "—"}</div>
                   </div>
                 ))}
@@ -342,7 +342,7 @@ export default function MapPage() {
       )}
 
       {!imageryId && (
-        <div className="absolute inset-x-0 bottom-8 mx-auto w-fit rounded-lg border border-line bg-surface/95 px-4 py-2 text-xs text-muted">
+        <div className="absolute inset-x-0 bottom-8 mx-auto w-fit rounded-lg border border-line bg-surface/95 px-4 py-2 text-[12px] text-muted">
           No observations for this AOI yet. Add one in the <Link to="/explorer" className="text-accent-strong underline">Image Explorer</Link>.
         </div>
       )}

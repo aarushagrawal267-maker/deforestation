@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { Download, PenSquare, Search, Trash2, Upload } from "lucide-react";
+import { Cloud, Download, PenSquare, Search, Trash2, Upload } from "lucide-react";
 import { useMemo, useState } from "react";
 import { api, tileUrl } from "../api/client";
 import { useAOIs, useInvalidate, useProducts, useSceneSearch } from "../api/hooks";
@@ -167,7 +167,7 @@ export default function ExplorerPage() {
                 <Button size="sm" variant={drawMode ? "primary" : "secondary"} onClick={() => setDrawMode((d) => !d)}>
                   <PenSquare className="h-3.5 w-3.5" /> {drawMode ? "Drag on map…" : "Draw new AOI"}
                 </Button>
-                <label className="inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-lg border border-line-strong bg-raised px-2.5 text-xs">
+                <label className="inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-lg border border-line-strong bg-raised px-2.5 text-[12px]">
                   <Upload className="h-3.5 w-3.5" /> GeoJSON
                   <input type="file" accept=".json,.geojson" className="hidden" onChange={(e) => e.target.files?.[0] && importGeojson(e.target.files[0])} />
                 </label>
@@ -211,7 +211,7 @@ export default function ExplorerPage() {
                 </div>
               )}
               {view === "compare" && !compareProduct && (
-                <div className="absolute inset-x-0 top-3 z-10 mx-auto w-fit rounded-lg bg-surface/95 px-3 py-1.5 text-xs text-muted">
+                <div className="absolute inset-x-0 top-3 z-10 mx-auto w-fit rounded-lg bg-surface/95 px-3 py-1.5 text-[12px] text-muted">
                   Choose a second observation below to compare.
                 </div>
               )}
@@ -252,8 +252,8 @@ export default function ExplorerPage() {
               <Empty title="No observations yet">Search for acquisitions on the right and ingest one or more.</Empty>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-[12.5px]">
-                  <thead className="text-left text-[11px] uppercase tracking-[0.08em] text-muted">
+                <table className="w-full text-[13px]">
+                  <thead className="text-left text-[11px] text-muted">
                     <tr>
                       <th className="py-1.5">Acquired</th>
                       <th>Type</th>
@@ -267,12 +267,12 @@ export default function ExplorerPage() {
                   </thead>
                   <tbody className="divide-y divide-line">
                     {products.map((p) => (
-                      <tr key={p.id} className={clsx(p.id === viewProduct?.id && "bg-accent-soft/40")}>
+                      <tr key={p.id} className={clsx(p.id === viewProduct?.id && "bg-raised shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]")}>
                         <td className="py-2">
                           <button className="text-ink hover:underline" onClick={() => setViewId(p.id)}>
                             {fmtDate(p.acquired)}
                           </button>
-                          <div className="num text-[10px] text-faint">{p.id}</div>
+                          <div className="num text-[11px] text-faint">{p.id}</div>
                         </td>
                         <td className="text-ink-2">{p.kind.replace(/_/g, " ")}</td>
                         <td className="num max-w-[16rem] truncate text-[11px] text-muted" title={p.scene_ids.join("\n")}>
@@ -361,7 +361,7 @@ export default function ExplorerPage() {
                   <li key={s.id}>
                     <button
                       onClick={() => toggleScene(s)}
-                      className={clsx("flex w-full items-center gap-3 px-1 py-1.5 text-left", picked.includes(s.id) && "bg-accent-soft/50")}
+                      className={clsx("flex w-full items-center gap-3 px-1 py-1.5 text-left", picked.includes(s.id) && "bg-raised shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]")}
                     >
                       {s.thumbnail ? (
                         <img src={s.thumbnail} alt="" loading="lazy" className="h-10 w-10 rounded object-cover" />
@@ -369,13 +369,19 @@ export default function ExplorerPage() {
                         <div className="h-10 w-10 rounded bg-raised" />
                       )}
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center justify-between text-[12.5px]">
+                        <div className="flex items-center justify-between text-[13px]">
                           <span>{fmtDate(s.datetime)}</span>
-                          <span className={clsx("num text-[11px]", (s.cloud_cover ?? 100) < 10 ? "text-accent-strong" : "text-uncertain")}>
-                            ☁ {fmtNum(s.cloud_cover, 1)}%
+                          <span
+                            className={clsx(
+                              "num flex items-center gap-1 text-[11px]",
+                              (s.cloud_cover ?? 100) < 10 ? "text-accent-strong" : "text-uncertain",
+                            )}
+                            title="Scene cloud cover"
+                          >
+                            <Cloud className="h-3.5 w-3.5" strokeWidth={1.5} aria-label="Cloud cover" /> {fmtNum(s.cloud_cover, 1)}%
                           </span>
                         </div>
-                        <div className="num truncate text-[10px] text-faint">
+                        <div className="num truncate text-[11px] text-faint">
                           {s.platform} · {s.mgrs_tile} · baseline {s.processing_baseline}
                         </div>
                       </div>

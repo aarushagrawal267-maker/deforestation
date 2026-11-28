@@ -34,8 +34,10 @@ export default function DocsPage() {
               to={`/docs/${d.slug}`}
               className={({ isActive }) =>
                 clsx(
-                  "block rounded-lg px-3 py-1.5 text-[13px]",
-                  isActive || (!doc && d.slug === slug) ? "bg-accent-soft text-ink" : "text-muted hover:bg-raised hover:text-ink",
+                  "block rounded-lg border px-3 py-1.5 text-[13px] transition-colors duration-150",
+                  isActive || (!doc && d.slug === slug)
+                    ? "border-line bg-raised text-ink shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
+                    : "border-transparent text-muted hover:bg-raised/60 hover:text-ink",
                 )
               }
             >

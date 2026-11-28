@@ -118,7 +118,7 @@ export default function HistoryPage() {
               {jobs.map((j) => (
                 <li key={j.id} className="py-2">
                   <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-2 text-[12.5px]">
+                    <div className="flex items-center gap-2 text-[13px]">
                       <StatusBadge status={j.status} />
                       <span className="text-ink">{j.type}</span>
                       <span className="num text-[11px] text-faint">{j.id}</span>
@@ -149,8 +149,8 @@ export default function HistoryPage() {
           {!exports?.length ? (
             <Empty title="No exports yet">Export results from the Change Detection, Segmentation or Investigation pages.</Empty>
           ) : (
-            <table className="w-full text-[12.5px]">
-              <thead className="text-left text-[10.5px] uppercase tracking-[0.08em] text-muted">
+            <table className="w-full text-[13px]">
+              <thead className="text-left text-[11px] text-muted">
                 <tr>
                   <th className="py-1">Export</th>
                   <th>Source</th>

@@ -132,7 +132,7 @@ export default function ChangePage() {
                   ))}
                 </Select>
               </Field>
-              <button className="flex items-center gap-1.5 text-xs text-muted hover:text-ink" onClick={() => setShowParams((v) => !v)}>
+              <button className="flex items-center gap-1.5 text-[12px] text-muted hover:text-ink" onClick={() => setShowParams((v) => !v)}>
                 <SlidersHorizontal className="h-3.5 w-3.5" /> Decision thresholds
               </button>
               {showParams && (
@@ -176,12 +176,12 @@ export default function ChangePage() {
               <ul className="divide-y divide-line">
                 {runs.map((r) => (
                   <li key={r.id}>
-                    <button className="flex w-full items-center justify-between gap-2 py-2 text-left text-[12.5px]" onClick={() => setSelectedRun(r.id)}>
+                    <button className="flex w-full items-center justify-between gap-2 py-2 text-left text-[13px]" onClick={() => setSelectedRun(r.id)}>
                       <span>
                         <span className={r.id === runId ? "text-accent-strong" : "text-ink"}>
                           {fmtDate(r.before_acquired)} → {fmtDate(r.after_acquired)}
                         </span>
-                        <span className="num block text-[10px] text-faint">
+                        <span className="num block text-[11px] text-faint">
                           {r.id} · {fmtDateTime(r.created_at)}
                         </span>
                       </span>
@@ -286,7 +286,7 @@ export default function ChangePage() {
                     rows={[
                       ["Residual shift", `${s.coregistration.magnitude.toFixed(2)} px${s.coregistration.applied ? " (corrected)" : ""}`],
                       ["Calibrated model", s.calibrated ? "yes (temperature scaling)" : "no"],
-                      ["Checkpoint", <span className="num text-[10px]">{s.checkpoint_sha256.slice(0, 12)}…</span>],
+                      ["Checkpoint", <span className="num text-[11px]">{s.checkpoint_sha256.slice(0, 12)}…</span>],
                       ["Reference", <span className="text-[11px]">{s.hansen_reference ?? "—"}</span>],
                     ]}
                   />
@@ -306,13 +306,13 @@ export default function ChangePage() {
                 }
               >
                 {exportRow && (
-                  <a className="mb-3 block text-xs text-accent-strong underline" href={exportRow.download_url}>
+                  <a className="mb-3 block text-[12px] text-accent-strong underline" href={exportRow.download_url}>
                     Download export {exportRow.id} ({exportRow.format})
                   </a>
                 )}
                 <div className="max-h-80 overflow-y-auto">
                   <table className="w-full text-[12px]">
-                    <thead className="sticky top-0 bg-surface text-left text-[10.5px] uppercase tracking-[0.08em] text-muted">
+                    <thead className="sticky top-0 bg-surface text-left text-[11px] text-muted">
                       <tr>
                         <th className="py-1.5">Region</th>
                         <th>Area</th>
@@ -342,7 +342,7 @@ export default function ChangePage() {
                             <td className="num">{signed(p.delta_nbr, 2)}</td>
                             <td className="num">{fmtPct(p.hansen_loss_fraction ?? null, 0)}</td>
                             <td>
-                              <span className={`rounded border px-1 py-0.5 text-[10px] ${EVIDENCE[p.evidence_level]?.tone}`}>{EVIDENCE[p.evidence_level]?.label}</span>
+                              <span className={`rounded border px-1 py-0.5 text-[11px] ${EVIDENCE[p.evidence_level]?.tone}`}>{EVIDENCE[p.evidence_level]?.label}</span>
                             </td>
                           </tr>
                         ))}
