@@ -104,7 +104,7 @@ function addOrUpdate(map: MLMap, l: MapLayer, before?: string) {
         type: "line",
         source: l.id,
         paint: {
-          "line-color": l.color ?? "#e4ece7",
+          "line-color": l.color ?? "#e8ebe9",
           "line-width": l.kind === "draw" ? 2 : 1.4,
           "line-dasharray": l.kind === "outline" ? [3, 2] : [1, 0],
         },

@@ -3,23 +3,24 @@
 
 /* ------------------------------------------------------------------
    Canopy Instrument design tokens
-   Quiet surfaces, precise type; colour reserved for data.
+   Near-neutral graphite surfaces, precise type; green lives in the
+   accent and the map, colour is reserved for data.
 ------------------------------------------------------------------- */
 @theme {
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Fraunces Variable", ui-serif, Georgia, serif;
   --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
 
-  --color-canvas: #0b1310;
-  --color-surface: #121b17;
-  --color-raised: #18231e;
-  --color-sunken: #0e1613;
-  --color-line: #25332c;
-  --color-line-strong: #34463d;
-  --color-ink: #e4ece7;
-  --color-ink-2: #b8c7bf;
-  --color-muted: #8da197;
-  --color-faint: #5f7268;
+  --color-canvas: #121413;
+  --color-surface: #181a19;
+  --color-raised: #202322;
+  --color-sunken: #0e100f;
+  --color-line: #2a2d2b;
+  --color-line-strong: #3b3f3d;
+  --color-ink: #e8ebe9;
+  --color-ink-2: #b6bcb8;
+  --color-muted: #9aa19d;
+  --color-faint: #858c88;
   --color-accent: #3faf86;
   --color-accent-strong: #5cc79f;
   --color-accent-soft: #173a2d;
@@ -88,7 +89,7 @@ body {
   filter: invert(0.85);
 }
 .maplibregl-ctrl-attrib {
-  background: rgba(11, 19, 16, 0.75) !important;
+  background: rgba(18, 20, 19, 0.8) !important;
   color: var(--color-muted);
   font-size: 10px;
 }
@@ -96,7 +97,7 @@ body {
   color: var(--color-ink-2) !important;
 }
 .maplibregl-ctrl-scale {
-  background: rgba(11, 19, 16, 0.7);
+  background: rgba(18, 20, 19, 0.8);
   color: var(--color-ink-2);
   border-color: var(--color-ink-2);
   font-family: var(--font-mono);

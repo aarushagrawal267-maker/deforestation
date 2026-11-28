@@ -37,10 +37,10 @@ function Logo() {
   return (
     <div className="flex items-center gap-2.5 px-3 pb-5 pt-4">
       <svg viewBox="0 0 32 32" className="h-8 w-8 shrink-0" aria-hidden>
-        <rect width="32" height="32" rx="8" fill="#18231e" stroke="#34463d" />
+        <rect width="32" height="32" rx="8" fill="#202322" stroke="#3b3f3d" />
         <path d="M16 6c4.6 4.6 6.5 8.3 6.5 11.8a6.5 6.5 0 0 1-13 0C9.5 14.3 11.4 10.6 16 6z" fill="#3faf86" />
-        <path d="M16 12.5v13" stroke="#0b1310" strokeWidth="1.8" strokeLinecap="round" />
-        <path d="M16 18l3-2.4M16 21.5l-3-2.4" stroke="#0b1310" strokeWidth="1.4" strokeLinecap="round" />
+        <path d="M16 12.5v13" stroke="#121413" strokeWidth="1.8" strokeLinecap="round" />
+        <path d="M16 18l3-2.4M16 21.5l-3-2.4" stroke="#121413" strokeWidth="1.4" strokeLinecap="round" />
       </svg>
       <div className="hidden xl:block">
         <div className="font-display text-[1.15rem] leading-none font-medium tracking-tight">Sylva</div>

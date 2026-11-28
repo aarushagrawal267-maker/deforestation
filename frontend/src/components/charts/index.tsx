@@ -15,11 +15,11 @@ import {
 import type { EpochRow } from "../../api/types";
 import { CLASS_COLORS, CLASS_NAMES } from "../../lib/format";
 
-const axis = { stroke: "#5f7268", fontSize: 11, tickLine: false };
-const grid = <CartesianGrid stroke="#25332c" strokeDasharray="3 3" vertical={false} />;
+const axis = { stroke: "#858c88", fontSize: 11, tickLine: false };
+const grid = <CartesianGrid stroke="#2a2d2b" strokeDasharray="3 3" vertical={false} />;
 const tooltipStyle = {
-  contentStyle: { background: "#121b17", border: "1px solid #34463d", borderRadius: 8, fontSize: 12 },
-  labelStyle: { color: "#b8c7bf" },
+  contentStyle: { background: "#181a19", border: "1px solid #3b3f3d", borderRadius: 8, fontSize: 12 },
+  labelStyle: { color: "#b6bcb8" },
 };
 
 export function LossCurves({ epochs }: { epochs: EpochRow[] }) {
@@ -52,7 +52,7 @@ export function MiouCurve({ epochs }: { epochs: EpochRow[] }) {
         <YAxis {...axis} domain={[0, 1]} />
         <Tooltip {...tooltipStyle} formatter={(v: number) => v?.toFixed(3)} />
         <Legend wrapperStyle={{ fontSize: 11 }} />
-        <Line dataKey="miou" name="Validation mIoU" stroke="#e4ece7" strokeWidth={2.4} dot={false} isAnimationActive={false} />
+        <Line dataKey="miou" name="Validation mIoU" stroke="#e8ebe9" strokeWidth={2.4} dot={false} isAnimationActive={false} />
         {CLASS_NAMES.map((n, i) => (
           <Line key={n} dataKey={`c${i}`} name={n} stroke={CLASS_COLORS[i]} strokeWidth={1.2} strokeDasharray="4 3" dot={false} isAnimationActive={false} />
         ))}
@@ -89,7 +89,7 @@ export function ConfusionMatrix({ cm, names = CLASS_NAMES }: { cm: number[][]; n
                     className="num rounded p-1.5 text-center"
                     style={{
                       background: i === j ? `rgba(63,175,134,${0.12 + f * 0.75})` : `rgba(228,87,46,${f * 0.9})`,
-                      color: f > 0.45 ? "#0b1310" : "#e4ece7",
+                      color: f > 0.45 ? "#121413" : "#e8ebe9",
                     }}
                   >
                     {(f * 100).toFixed(1)}%
@@ -113,7 +113,7 @@ export function Reliability({ bins }: { bins: { confidence: number; accuracy: nu
         <XAxis type="number" dataKey="confidence" name="Confidence" domain={[0, 1]} {...axis} />
         <YAxis type="number" dataKey="accuracy" name="Accuracy" domain={[0, 1]} {...axis} />
         <ZAxis type="number" dataKey="count" range={[30, 260]} />
-        <ReferenceLine segment={[{ x: 0, y: 0 }, { x: 1, y: 1 }]} stroke="#5f7268" strokeDasharray="4 4" />
+        <ReferenceLine segment={[{ x: 0, y: 0 }, { x: 1, y: 1 }]} stroke="#858c88" strokeDasharray="4 4" />
         <Tooltip {...tooltipStyle} formatter={(v: number) => (v > 1 ? v.toLocaleString() : v.toFixed(3))} />
         <Scatter data={bins} fill="#3faf86" />
       </ScatterChart>
