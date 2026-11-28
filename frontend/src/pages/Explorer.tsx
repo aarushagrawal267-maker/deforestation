@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { Download, PenSquare, Search, Trash2, Upload } from "lucide-react";
+import { Cloud, Download, PenSquare, Search, Trash2, Upload } from "lucide-react";
 import { useMemo, useState } from "react";
 import { api, tileUrl } from "../api/client";
 import { useAOIs, useInvalidate, useProducts, useSceneSearch } from "../api/hooks";
@@ -371,8 +371,14 @@ export default function ExplorerPage() {
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between text-[12.5px]">
                           <span>{fmtDate(s.datetime)}</span>
-                          <span className={clsx("num text-[11px]", (s.cloud_cover ?? 100) < 10 ? "text-accent-strong" : "text-uncertain")}>
-                            ☁ {fmtNum(s.cloud_cover, 1)}%
+                          <span
+                            className={clsx(
+                              "num flex items-center gap-1 text-[11px]",
+                              (s.cloud_cover ?? 100) < 10 ? "text-accent-strong" : "text-uncertain",
+                            )}
+                            title="Scene cloud cover"
+                          >
+                            <Cloud className="h-3.5 w-3.5" strokeWidth={1.5} aria-label="Cloud cover" /> {fmtNum(s.cloud_cover, 1)}%
                           </span>
                         </div>
                         <div className="num truncate text-[10px] text-faint">

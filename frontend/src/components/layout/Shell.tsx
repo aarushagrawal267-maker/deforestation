@@ -2,7 +2,6 @@ import clsx from "clsx";
 import {
   BookOpen,
   Boxes,
-  Brain,
   Database,
   FlaskConical,
   GitCompareArrows,
@@ -11,6 +10,7 @@ import {
   Map as MapIcon,
   Satellite,
   ScanSearch,
+  Target,
   Trees,
 } from "lucide-react";
 import { useEffect, type ReactNode } from "react";
@@ -28,7 +28,7 @@ const NAV = [
   { to: "/investigate", label: "Investigation", icon: ScanSearch },
   { to: "/datasets", label: "Datasets", icon: Database },
   { to: "/lab", label: "Model Lab", icon: FlaskConical },
-  { to: "/evaluation", label: "Evaluation", icon: Brain },
+  { to: "/evaluation", label: "Evaluation", icon: Target },
   { to: "/history", label: "History", icon: History },
   { to: "/docs", label: "Research & Docs", icon: BookOpen },
 ];
